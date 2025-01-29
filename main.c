@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <stdbool.h>
 
+//variáveis globais
 SDL_Window* window = NULL;
 SDL_Renderer* renderer = NULL;
 bool movingR = false;
