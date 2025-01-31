@@ -2,11 +2,14 @@
 #include <SDL2/SDL_image.h>
 #include <stdio.h>
 #include <stdbool.h>
+#include "textures.h"
+#include "player.h"
+#include "colisao.h"
 
 SDL_Window* window = NULL;
 SDL_Renderer* renderer = NULL;
-bool movingR = false;
-bool movingL = false;
+
+
 
 //funções para inicializar o SDL
 void init(){
@@ -26,40 +29,57 @@ void init(){
     }
 }
 
-//carregar a textura no SDL 
-SDL_Texture* loadImg(const char* path){
-    SDL_Texture *texture = IMG_LoadTexture(renderer,path);
-    return texture;
-}
 
-void moveCamera(SDL_Rect* srcRect){
-    if(movingR && srcRect->x < 505){
+void moveCamera(SDL_Rect* srcRect,Player* jogador){
+    if(jogador->movingR && srcRect->x < 505 && !colisaoX(srcRect)){
         srcRect->x += 1;
     }
-    if(movingL && srcRect->x > 8){
+    if(jogador->movingL && srcRect->x > 8){
         srcRect->x -= 1;
+    }
+    if(jogador->movingU){
+        srcRect->y -= 1;
+    }
+    if(jogador->movingD){
+        srcRect->y += 1;
     }
 }
 
-void handleEvents(SDL_Event* event, bool* quit){
+void handleEvents(SDL_Event* event, bool* quit,Player* jogador){
     while(SDL_PollEvent(event)){
         if(event->type == SDL_QUIT){
             *quit = true;
         }
         if(event->type == SDL_KEYDOWN){
-            if(event->key.keysym.sym == SDLK_d && movingL == false){
-                movingR = true;
+            if(event->key.keysym.sym == SDLK_d && !jogador->movingL && !jogador->movingU && !jogador->movingD){
+                jogador->movingR = true;
             }
-            else if(event->key.keysym.sym = SDLK_a && movingR == false){
-                movingL = true;
+            else if(event->key.keysym.sym == SDLK_a && !jogador->movingR && !jogador->movingU && !jogador->movingD){
+                jogador->movingL = true;
+            }
+            else if(event->key.keysym.sym == SDLK_w && !jogador->movingD && !jogador->movingR && !jogador->movingL){
+                jogador->movingU = true;
+            }
+            else if(event->key.keysym.sym == SDLK_s && !jogador->movingU && !jogador->movingR && !jogador->movingL){
+                jogador->movingD = true;
             }
         }
         else if(event->type == SDL_KEYUP){
             if(event->key.keysym.sym == SDLK_d){
-                movingR = false;
+                jogador->movingR = false;
+                jogador->idleState = 0;
             }
             else if(event->key.keysym.sym == SDLK_a){
-                movingL = false;
+                jogador->movingL = false;
+                jogador->idleState = 2;
+            }
+            else if(event->key.keysym.sym == SDLK_w){
+                jogador->movingU = false;
+                jogador->idleState = 1;
+            }
+            else if(event->key.keysym.sym == SDLK_s){
+                jogador->movingD = false;
+                jogador->idleState = 3;
             }
         }
     }
@@ -69,11 +89,12 @@ int main(int argc, char* argv[]){
     init();
     SDL_Event event;
     bool quit = false;
-    SDL_Texture* backs = loadImg("backs.png");
-    SDL_Texture* idle = loadImg("IdleR.png");
+    SDL_Texture* backs = loadIMG(renderer,"backs.png");
+    Player jogador;
+    initializePlayer(&jogador,renderer);
     SDL_Rect srcRect, destRect, destRectc;
     srcRect.x = 217;
-    srcRect.y = 361;
+    srcRect.y = 355;
     srcRect.w = 270;
     srcRect.h = 180;
     destRect.x = 0;
@@ -84,14 +105,15 @@ int main(int argc, char* argv[]){
     destRectc.y = 500;
     destRectc.w = 96;
     destRectc.h = 90;
+    int cFrame = 0;
+    Uint32 lastTime = SDL_GetTicks();
     while(!quit){
-        handleEvents(&event,&quit);
+        handleEvents(&event,&quit,&jogador);
         SDL_RenderClear(renderer);
-        moveCamera(&srcRect);
+        moveCamera(&srcRect,&jogador);
         SDL_RenderCopy(renderer,backs,&srcRect,&destRect);
-        printf("%d ",srcRect.x);
-        printf("%d\n",srcRect.y);
-        SDL_RenderCopy(renderer,idle,NULL,&destRectc);
+        animatePlayer(&jogador,renderer,&cFrame,&destRectc,&lastTime);
+        printf("%d %d\n",srcRect.x,srcRect.y);
         SDL_RenderPresent(renderer);
         SDL_Delay(16);
     }
