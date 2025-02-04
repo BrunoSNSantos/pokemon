@@ -110,7 +110,7 @@ int main(int argc, char* argv[]){
     init();
     SDL_Event event;
     bool quit = false;
-    SDL_Texture* backs = loadIMG(renderer,"backs.png");
+    SDL_Texture* backs = loadIMG(renderer,"assets/backs.png");
     Player jogador;
     initializePlayer(&jogador,renderer);
     SDL_Rect srcRect, destRect, destRectc;
