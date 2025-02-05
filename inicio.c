@@ -1,35 +1,64 @@
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_image.h>
-#include <SDL2/SDL_ttf.h>
-#include <SDL2/SDL_mixer.h>
-#include <stdio.h>
+#include "inicio.h"
+#include <stdbool.h>
     
     //função para iniciar o SDL e bibliotecas
     void iniciar(){
     
-    if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO) < 0) {
-        printf("Erro ao inicializar SDL: %s\n", SDL_GetError());
-    }
+        if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO) < 0) {
+            printf("Erro ao inicializar SDL: %s\n", SDL_GetError());
+        }
 
-    if (!(IMG_Init(IMG_INIT_PNG) & IMG_INIT_PNG)) {
-        printf("Erro ao inicializar SDL_image: %s\n", IMG_GetError());
-        SDL_Quit();
-    }
+        if (!(IMG_Init(IMG_INIT_PNG) & IMG_INIT_PNG)) {
+            printf("Erro ao inicializar SDL_image: %s\n", IMG_GetError());
+            SDL_Quit();
+        }
 
-    if (TTF_Init() == -1) {
-        printf("Erro ao inicializar SDL_ttf: %s\n", TTF_GetError());
-        IMG_Quit();
-        SDL_Quit();
+        if (TTF_Init() == -1) {
+            printf("Erro ao inicializar SDL_ttf: %s\n", TTF_GetError());
+            IMG_Quit();
+            SDL_Quit();
+        }
+        
+        if (Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048) < 0) {
+            printf("Erro ao inicializar SDL_mixer: %s\n", Mix_GetError());
+            TTF_Quit();
+            IMG_Quit();
+            SDL_Quit();
+        }
     }
-    
-    if (Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048) < 0) {
-        printf("Erro ao inicializar SDL_mixer: %s\n", Mix_GetError());
-        TTF_Quit();
-        IMG_Quit();
-        SDL_Quit();
+    //função da tela de início
+    void exibirImagem(bool skibidi, SDL_Renderer* toilet){
+
+        if(skibidi){
+        SDL_Surface* bgSurface = IMG_Load("inicial.png");
+
+        Mix_Music* musicainicio = Mix_LoadMUS("Tela_de_inicio.mp3");
+        Mix_PlayMusic(musicainicio, -1);
+
+        SDL_Texture* bgTexture = SDL_CreateTextureFromSurface(toilet, bgSurface);
+        SDL_FreeSurface(bgSurface);
+
+        TTF_Font* font = TTF_OpenFont("fonte.ttf", 72);
+        SDL_Color textColor = {209, 202, 188}; // Branco
+        SDL_Surface* textSurface = TTF_RenderText_Solid(font, "Press ENTER to start", textColor);
+        SDL_Texture* textTexture = SDL_CreateTextureFromSurface(toilet, textSurface);
+        textSurface->w = 320;
+        textSurface->h = 63;
+
+        SDL_Rect textRect;
+        textRect.x = 480;
+        textRect.y = 520;
+        textRect.w = textSurface->w;
+        textRect.h = textSurface->h;
+
+        SDL_FreeSurface(textSurface);
+
+        SDL_RenderCopy(toilet, bgTexture, NULL, NULL);
+
+        SDL_RenderCopy(toilet, textTexture, NULL, &textRect);
+        }
+
     }
-    
-}
 int main(int argc, char* argv[]) {
     iniciar();
 
@@ -38,7 +67,7 @@ int main(int argc, char* argv[]) {
         "Pokemon Ruby",
         SDL_WINDOWPOS_CENTERED,
         SDL_WINDOWPOS_CENTERED,
-        800, 600,
+        1280, 720,
         SDL_WINDOW_SHOWN
     );
 
@@ -103,12 +132,12 @@ int main(int argc, char* argv[]) {
     SDL_Color textColor = {209, 202, 188}; // Branco
     SDL_Surface* textSurface = TTF_RenderText_Solid(font, "Press ENTER to start", textColor);
     SDL_Texture* textTexture = SDL_CreateTextureFromSurface(renderer, textSurface);
-    textSurface->w = 280;
+    textSurface->w = 320;
     textSurface->h = 63;
 
     SDL_Rect textRect;
-    textRect.x = 265;
-    textRect.y = 400;
+    textRect.x = 480;
+    textRect.y = 520;
     textRect.w = textSurface->w;
     textRect.h = textSurface->h;
 
