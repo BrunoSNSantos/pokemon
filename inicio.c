@@ -27,7 +27,7 @@
         }
     }
     //função da tela de início
-    void exibirImagem(bool skibidi, SDL_Renderer* toilet){
+    void exibirImagem(bool skibidi, SDL_Renderer* renderer){
 
         if(skibidi){
         SDL_Surface* bgSurface = IMG_Load("inicial.png");
@@ -35,13 +35,13 @@
         Mix_Music* musicainicio = Mix_LoadMUS("Tela_de_inicio.mp3");
         Mix_PlayMusic(musicainicio, -1);
 
-        SDL_Texture* bgTexture = SDL_CreateTextureFromSurface(toilet, bgSurface);
+        SDL_Texture* bgTexture = SDL_CreateTextureFromSurface(renderer, bgSurface);
         SDL_FreeSurface(bgSurface);
 
         TTF_Font* font = TTF_OpenFont("fonte.ttf", 72);
         SDL_Color textColor = {209, 202, 188}; // Branco
         SDL_Surface* textSurface = TTF_RenderText_Solid(font, "Press ENTER to start", textColor);
-        SDL_Texture* textTexture = SDL_CreateTextureFromSurface(toilet, textSurface);
+        SDL_Texture* textTexture = SDL_CreateTextureFromSurface(renderer, textSurface);
         textSurface->w = 320;
         textSurface->h = 63;
 
@@ -53,9 +53,9 @@
 
         SDL_FreeSurface(textSurface);
 
-        SDL_RenderCopy(toilet, bgTexture, NULL, NULL);
+        SDL_RenderCopy(renderer, bgTexture, NULL, NULL);
 
-        SDL_RenderCopy(toilet, textTexture, NULL, &textRect);
+        SDL_RenderCopy(renderer, textTexture, NULL, &textRect);
         }
 
     }
@@ -110,6 +110,8 @@ int main(int argc, char* argv[]) {
     else {
     Mix_PlayMusic(musicainicio, -1);  // Tocar música em loop infinito
     }
+    //play e pause da musica
+    bool m = true;
     
 
     SDL_Texture* bgTexture = SDL_CreateTextureFromSurface(renderer, bgSurface);
@@ -155,6 +157,16 @@ int main(int argc, char* argv[]) {
 
             if (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_RETURN) {
                 running = 0; // Sai da tela de início (simulando transição para o jogo)
+            }
+            if (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_m) {
+                m = !m;
+                if(!m){
+                    Mix_HaltMusic();
+                }
+                else{
+                    Mix_PlayMusic(musicainicio, -1);
+                }
+                
             }
         }
         
