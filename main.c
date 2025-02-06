@@ -30,13 +30,13 @@ void moveCamera(SDL_Rect* srcRect, Player* jogador){
     if(jogador->movingR && srcRect->x < 550 && !colisaoDireita(srcRect)){
         srcRect->x += 1;
     }
-    if(jogador->movingL && srcRect->x > 8 && !colisaoEsquerda(srcRect)){
+    if(jogador->movingL && srcRect->x > 85 && !colisaoEsquerda(srcRect)){
         srcRect->x -= 1;
     }
     if(jogador->movingU && !colisaoCima(srcRect)){
         srcRect->y -= 1;
     }
-    if(jogador->movingD && !colisaoBaixo(srcRect)){
+    if(jogador->movingD && srcRect->y < 288 && !colisaoBaixo(srcRect)){
         srcRect->y += 1;
     }
 }
