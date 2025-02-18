@@ -7,8 +7,8 @@ void initializePlayer(Player* player,SDL_Renderer* renderer){
     player->movingD = false;
     player->right = loadIMG(renderer,"assets/WalkR.png");
     player->left = loadIMG(renderer,"assets/WalkL.png");
-    player->up = loadIMG(renderer,"assetsWalkU.png");
-    player->down = loadIMG(renderer,"assetsWalkD.png");
+    player->up = loadIMG(renderer,"assets/WalkU.png");
+    player->down = loadIMG(renderer,"assets/WalkD.png");
     player->idleState = 0;
 }
 

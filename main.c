@@ -29,7 +29,14 @@ void init(){
     }
 }
 
-void moveCamera(SDL_Rect* srcRect, Player* jogador){
+void mudarCenario(SDL_Texture** city,SDL_Rect* camera){
+    *city = loadIMG(renderer, "gym.png");
+    camera->x = 650;
+    camera->y = 450;
+}
+
+//Função que move o jogador
+bool moveCamera(SDL_Rect* srcRect, Player* jogador){
     if(jogador->movingR && srcRect->x < 550 && !colisaoDireita(srcRect)){
         srcRect->x += 1;
     }
@@ -38,12 +45,17 @@ void moveCamera(SDL_Rect* srcRect, Player* jogador){
     }
     if(jogador->movingU && !colisaoCima(srcRect)){
         srcRect->y -= 1;
+        if(srcRect->x > 315 && srcRect->x < 336 && srcRect->y == -1){
+            return true;
+        }
     }
     if(jogador->movingD && srcRect->y < 288 && !colisaoBaixo(srcRect)){
         srcRect->y += 1;
     }
+    return false;
 }
 
+//Função que lida com eventos
 void handleEvents(SDL_Event* event, bool* quit, Player* jogador){
     while(SDL_PollEvent(event)){
         //Evento para fechar o jogo
@@ -102,11 +114,12 @@ void handleEvents(SDL_Event* event, bool* quit, Player* jogador){
     }
 }
 
+//Função principal
 int main(int argc, char* argv[]){
     init();
     SDL_Event event;
     bool quit = false;
-    SDL_Texture* backs = loadIMG(renderer, "Game Boy Advance - Pokemon Ruby Sapphire - Petalburg City.png");
+    SDL_Texture* backs = loadIMG(renderer, "cidade.png");
     Player jogador;
     initializePlayer(&jogador, renderer);
     SDL_Rect srcRect, destRect, destRectc;
@@ -127,7 +140,9 @@ int main(int argc, char* argv[]){
     while(!quit){
         handleEvents(&event, &quit, &jogador);
         SDL_RenderClear(renderer);
-        moveCamera(&srcRect, &jogador);
+        if(moveCamera(&srcRect, &jogador)){
+            mudarCenario(&backs,&srcRect);
+        }
         SDL_RenderCopy(renderer, backs, &srcRect, &destRect);
         animatePlayer(&jogador, renderer, &cFrame, &destRectc, &lastTime);
         printf("%d %d\n", srcRect.x, srcRect.y);
