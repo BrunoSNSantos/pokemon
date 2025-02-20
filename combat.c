@@ -29,6 +29,8 @@ Pokemon player = {"Pikachu", 100, 30, 20 , 30, NULL};
 Pokemon enemy = {"Blastoise", 120, 15, 30, 10, NULL};
 Move choque_do_trovao = {"Choque do Trovão", 20};
 Move hidro_canhao = {"Hidro Canhão", 30};
+Move trovoada_de_choques = {"Trovoada de Choques", 25};
+Move raio_congelante = {"Raio Congelante", 35};
 
 //Função para carregar as texturas
 SDL_Texture* load_texture(const char *path) {
@@ -40,6 +42,47 @@ SDL_Texture* load_texture(const char *path) {
     SDL_Texture *texture = SDL_CreateTextureFromSurface(renderer, surface);
     SDL_FreeSurface(surface);
     return texture;
+}
+
+//Função para o usuário escolher o golpe usado
+Move player_choose_move() {
+    SDL_Event e;
+    bool move_chosen = false;
+    Move selectedMove = choque_do_trovao;
+
+    printf("Selecione um ataque\n");
+    printf("[1] Choque do Trovão\n");
+    printf("[2] Trovoada de choques\n");
+    
+    while(!move_chosen) {
+        while (SDL_PollEvent(&e)) {
+            if (e.type == SDL_QUIT) {
+                exit(0);
+            } else if (e.type == SDL_KEYDOWN) {
+                switch (e.key.keysym.sym) {
+                    case SDLK_1:
+                        selectedMove = choque_do_trovao;
+                        move_chosen = true;
+                        break;
+                    case SDLK_2:
+                        selectedMove = trovoada_de_choques;
+                        move_chosen = true;
+                        break;
+                }
+            }
+        }
+    }
+    return selectedMove;
+}
+
+//Função para randomizar os golpes utilizados pelo oponente
+Move enemy_choose_move() {
+    int choice = rand() % 2;
+    if (choice == 0) {
+        return hidro_canhao;
+    } else {
+        return raio_congelante;
+    }
 }
 
 //Função para inicializar o SDL
@@ -56,7 +99,7 @@ bool init_SDL() {
     //carregando os assets
     background = load_texture("assets/battle_backgrounds.png");
     player.sprite = load_texture("assets/pikachu.png");
-    enemy.sprite = load_texture("assets/blastoise.png");
+    enemy.sprite = load_texture("assets/blastoise_enemy.png");
     return renderer != NULL && background != NULL && player.sprite != NULL && enemy.sprite != NULL;
 }
 
@@ -81,8 +124,8 @@ void render() {
     SDL_RenderCopy(renderer, background, &srcRect, NULL);
 
     //SDL_Rect src_rect = {0, 0, 640, 480};
-    SDL_Rect player_position = {}; //Retangulo que representa a posição do jogador
-    SDL_Rect enemy_position = {}; //Retangulo que representa a posição do inimigo
+    SDL_Rect player_position = {60, 300, 200, 200}; //Retangulo que representa a posição do jogador
+    SDL_Rect enemy_position = {360, 90, 200, 200}; //Retangulo que representa a posição do inimigo
     SDL_RenderCopy (renderer, player.sprite, NULL, &player_position);
     SDL_RenderCopy (renderer, enemy.sprite, NULL, &enemy_position);
 
@@ -101,25 +144,26 @@ void game_loop() {
         }
         render();
         if (player.speed>enemy.speed) {
-            attack(&player, &enemy, choque_do_trovao);
+            Move chosenMove = player_choose_move();
+            attack(&player, &enemy, chosenMove);
             if (enemy.hp>0) {
-                printf("hahaha");
-                attack(&enemy, &player, hidro_canhao);
+                Move chosenMove = enemy_choose_move();
+                attack(&enemy, &player, chosenMove);
             }
         } else {
-            attack(&enemy, &player, hidro_canhao);
+            Move chosenMove = enemy_choose_move();
+            attack(&enemy, &player, chosenMove);
             if (player.hp>0) {
-                attack(&player, &enemy, choque_do_trovao);
+                Move chosenMove = player_choose_move();
+                attack(&player, &enemy, chosenMove);
             }
         }
-        
-
         if (player.hp == 0 || enemy.hp == 0) {
             printf("Battle Over!");
             running = false;
         }
 
-        SDL_Delay(100);
+        SDL_Delay(1000);
     }
 }
 
@@ -136,6 +180,6 @@ void close_SDL() {
 int main(int argc, char *argv[]) {
     if (!init_SDL()) return -1;
     game_loop();
-    //close_SDL();
+    close_SDL();
     return 0;
 }
