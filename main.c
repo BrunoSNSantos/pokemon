@@ -58,16 +58,16 @@ bool moveCameraFora(SDL_Rect* srcRect, Player* jogador){
 
 void moveCameraDentro(SDL_Rect* srcRect, Player* jogador,SDL_Rect* hahah){
     hahah->w = 220;
-    if(jogador->movingR){
+    if(jogador->movingR && !colisaoDireitaG(srcRect)){
         srcRect->x += 1;
     }
-    if(jogador->movingL){
+    if(jogador->movingL && !colisaoEsquerdaG(srcRect)){
         srcRect->x -= 1;
     }
-    if(jogador->movingU){
+    if(jogador->movingU && !colisaoCimaG(srcRect)){
         srcRect->y -= 1;
     }
-    if(jogador->movingD){
+    if(jogador->movingD && !colisaoBaixoG(srcRect)){
         srcRect->y += 1;
     }
 }

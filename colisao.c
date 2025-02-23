@@ -101,3 +101,94 @@ bool colisaoEsquerda(SDL_Rect* camera) {
     }
     return false;
 }
+
+bool colisaoCimaG(SDL_Rect* camera) {
+    if ((camera->y == 672 && intervaloX(camera->x, 412, 459)) ||
+        (camera->y == 690 && intervaloX(camera->x, 440, 470)) ||
+        (camera->y == 720 && intervaloX(camera->x, 430, 440)) ||
+        (camera->y == 670 && intervaloX(camera->x, 350, 400)) ||
+        (camera->y == 720 && intervaloX(camera->x, 360, 385)) ||
+        (camera->y == 595 && intervaloX(camera->x, 381, 400)) ||
+        (camera->y == 607 && intervaloX(camera->x, 414, 430)) ||
+        (camera->y == 513 && intervaloX(camera->x, 350, 400)) ||
+        (camera->y == 513 && intervaloX(camera->x, 412, 470)) ||
+        (camera->y == 543 && intervaloX(camera->x, 365, 380)) ||
+        (camera->y == 417 && intervaloX(camera->x, 318, 400)) ||
+        (camera->y == 442 && intervaloX(camera->x, 394, 413)) ||
+        (camera->y == 445 && intervaloX(camera->x, 462, 479)) ||
+        (camera->y == 415 && intervaloX(camera->x, 410, 490))
+        ) {
+        return true;
+    }
+    return false;
+}
+
+bool colisaoBaixoG(SDL_Rect* camera) {
+    if ((camera->y == 727 && intervaloX(camera->x, 350, 400)) ||
+        (camera->y == 727 && intervaloX(camera->x, 420, 461)) ||
+        (camera->y == 681 && intervaloX(camera->x, 365, 385)) ||
+        (camera->y == 681 && intervaloX(camera->x, 430, 444)) ||
+        (camera->y == 632 && intervaloX(camera->x, 412, 427)) ||
+        (camera->y == 615 && intervaloX(camera->x, 381, 398)) ||
+        (camera->y == 550 && intervaloX(camera->x, 345, 398)) ||
+        (camera->y == 540 && intervaloX(camera->x, 410, 430)) ||
+        (camera->y == 550 && intervaloX(camera->x, 430, 470)) ||
+        (camera->y == 520 && intervaloX(camera->x, 365, 380)) ||
+        (camera->y == 472 && intervaloX(camera->x, 410, 500)) ||
+        (camera->y == 462 && intervaloX(camera->x, 442, 462)) ||
+        (camera->y == 472 && intervaloX(camera->x, 334, 400)) ||
+        (camera->y == 458 && intervaloX(camera->x, 318, 334)) ||
+        (camera->y == 428 && intervaloX(camera->x, 398, 413)) ||
+        (camera->y == 425 && intervaloX(camera->x, 460, 479))
+    ) {
+        return true;
+    }
+    return false;
+}
+
+bool colisaoDireitaG(SDL_Rect* camera) {
+    if ((camera->x == 458 && intervaloX(camera->y, 672, 727)) ||
+        (camera->x == 444 && intervaloX(camera->y, 672, 683)) ||
+        (camera->x == 360 && intervaloX(camera->y, 685, 715)) ||
+        (camera->x == 425 && intervaloX(camera->y, 685, 715)) ||
+        (camera->x == 410 && intervaloX(camera->y, 632, 670)) ||
+        (camera->x == 410 && intervaloX(camera->y, 540, 608)) ||
+        (camera->x == 425 && intervaloX(camera->y, 600, 632)) ||
+        (camera->x == 460 && intervaloX(camera->y, 500, 550)) ||
+        (camera->x == 361 && intervaloX(camera->y, 525, 540)) ||
+        (camera->x == 410 && intervaloX(camera->y, 473, 510)) ||
+        (camera->x == 442 && intervaloX(camera->y, 462, 472)) ||
+        (camera->x == 394 && intervaloX(camera->y, 428, 442)) ||
+        (camera->x == 460 && intervaloX(camera->y, 427, 444)) ||
+        (camera->x == 490 && intervaloX(camera->y, 415, 472)) ||
+        (camera->x == 410 && intervaloX(camera->y, 380, 415))
+
+         ) {
+        return true;
+    }
+    return false;
+}
+
+bool colisaoEsquerdaG(SDL_Rect* camera) {
+    if ((camera->x == 352 && intervaloX(camera->y, 660, 728)) ||
+        (camera->x == 447 && intervaloX(camera->y, 690, 720)) ||
+        (camera->x == 385 && intervaloX(camera->y, 680, 715)) ||
+        (camera->x == 400 && intervaloX(camera->y, 615, 670)) ||
+        (camera->x == 381 && intervaloX(camera->y, 590, 615)) ||
+        (camera->x == 400 && intervaloX(camera->y, 555, 590)) ||
+        (camera->x == 350 && intervaloX(camera->y, 500, 570)) ||
+        (camera->x == 382 && intervaloX(camera->y, 520, 540)) ||
+        (camera->x == 430 && intervaloX(camera->y, 540, 560)) ||
+        (camera->x == 400 && intervaloX(camera->y, 472, 510)) ||
+        (camera->x == 460 && intervaloX(camera->y, 462, 472)) ||
+        (camera->x == 334 && intervaloX(camera->y, 458, 472)) ||
+        (camera->x == 318 && intervaloX(camera->y, 417, 458)) ||
+        (camera->x == 413 && intervaloX(camera->y, 428, 442)) ||
+        (camera->x == 479 && intervaloX(camera->y, 427, 445)) ||
+        (camera->x == 400 && intervaloX(camera->y, 380, 417)) 
+        
+        ) {
+        return true;
+    }
+    return false;
+}
