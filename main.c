@@ -9,6 +9,7 @@
 //variáveis globais
 SDL_Window* window = NULL;
 SDL_Renderer* renderer = NULL;
+bool dentro = true;
 
 void init(){
     if(SDL_Init(SDL_INIT_EVERYTHING) < 0){
@@ -30,13 +31,13 @@ void init(){
 }
 
 void mudarCenario(SDL_Texture** city,SDL_Rect* camera){
-    *city = loadIMG(renderer, "gym.png");
-    camera->x = 650;
-    camera->y = 450;
+    *city = loadIMG(renderer, "Sootopolis Cityy.png");
+    camera->x = 413;
+    camera->y = 724;
 }
 
 //Função que move o jogador
-bool moveCamera(SDL_Rect* srcRect, Player* jogador){
+bool moveCameraFora(SDL_Rect* srcRect, Player* jogador){
     if(jogador->movingR && srcRect->x < 550 && !colisaoDireita(srcRect)){
         srcRect->x += 1;
     }
@@ -53,6 +54,22 @@ bool moveCamera(SDL_Rect* srcRect, Player* jogador){
         srcRect->y += 1;
     }
     return false;
+}
+
+void moveCameraDentro(SDL_Rect* srcRect, Player* jogador,SDL_Rect* hahah){
+    hahah->w = 220;
+    if(jogador->movingR){
+        srcRect->x += 1;
+    }
+    if(jogador->movingL){
+        srcRect->x -= 1;
+    }
+    if(jogador->movingU){
+        srcRect->y -= 1;
+    }
+    if(jogador->movingD){
+        srcRect->y += 1;
+    }
 }
 
 //Função que lida com eventos
@@ -140,8 +157,13 @@ int main(int argc, char* argv[]){
     while(!quit){
         handleEvents(&event, &quit, &jogador);
         SDL_RenderClear(renderer);
-        if(moveCamera(&srcRect, &jogador)){
-            mudarCenario(&backs,&srcRect);
+        if(dentro){
+            if(moveCameraFora(&srcRect, &jogador)){
+                mudarCenario(&backs,&srcRect);
+                dentro = false;
+            }
+        }else{
+            moveCameraDentro(&srcRect, &jogador,&srcRect);
         }
         SDL_RenderCopy(renderer, backs, &srcRect, &destRect);
         animatePlayer(&jogador, renderer, &cFrame, &destRectc, &lastTime);
