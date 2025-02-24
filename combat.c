@@ -14,6 +14,7 @@ SDL_Renderer* renderer = NULL;
 bool movingR = false;
 bool movingL = false;
 SDL_Texture *background = NULL;
+SDL_Texture *barra = NULL;
 TTF_Font *font = NULL;
 
 typedef struct {
@@ -30,8 +31,8 @@ typedef struct {
 //dados do jogador, adversário e golpes armazenados em arrays
 Pokemon player = {"Pikachu", 100, 30, 20 , 30, NULL};
 Pokemon enemy = {"Blastoise", 120, 15, 30, 10, NULL};
-Move choque_do_trovao = {"Choque do Trovão", 20};
-Move hidro_canhao = {"Hidro Canhão", 30};
+Move choque_do_trovao = {"Choque do Trovao", 20};
+Move hidro_canhao = {"Hidro Canhao", 30};
 Move trovoada_de_choques = {"Trovoada de Choques", 25};
 Move raio_congelante = {"Raio Congelante", 35};
 
@@ -59,11 +60,8 @@ Move player_choose_move() {
         render();
 
         SDL_Rect moveBox = {50, 350, 540, 100};
-        SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
-        SDL_RenderFillRect(renderer, &moveBox);
-        SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
 
-        render_text("1 - Choque do Trovão", 60, 360);
+        render_text("1 - Choque do Trovao", 60, 360);
         render_text("2 - Trovoada de Choques", 60, 390);
 
         SDL_RenderPresent(renderer);
@@ -105,7 +103,7 @@ void render_text(const char *text, int x, int y) {
         return;
     }
 
-    SDL_Color color = {255, 255, 255}; // White color
+    SDL_Color color = {0, 0, 0};
     SDL_Surface *surface = TTF_RenderText_Solid(font, text, color);
     if (!surface) {
         printf("Failed to create text surface: %s\n", TTF_GetError());
@@ -114,6 +112,8 @@ void render_text(const char *text, int x, int y) {
 
     SDL_Texture *texture = SDL_CreateTextureFromSurface(renderer, surface);
     SDL_Rect textRect = {x, y, surface->w, surface->h};
+    textRect.w *=1.6;
+    textRect.h *=1.6;
     SDL_RenderCopy(renderer, texture, NULL, &textRect);
 
     SDL_FreeSurface(surface);
@@ -145,6 +145,7 @@ bool init_SDL() {
     }
 
     //carregando os assets
+    barra = load_texture("assets/barra.png");
     background = load_texture("assets/battle_backgrounds.png");
     player.sprite = load_texture("assets/pikachu.png");
     enemy.sprite = load_texture("assets/blastoise_enemy.png");
@@ -170,13 +171,17 @@ void attack(Pokemon *attacker, Pokemon *defender, Move move) {
 void render() {
     SDL_RenderClear(renderer);
     SDL_Rect srcRect = {2,21,242,114};
-    SDL_RenderCopy(renderer, background, &srcRect, NULL);
+    SDL_Rect destRectBackgroung = {0, -50, 640, 480};
+    SDL_RenderCopy(renderer, background, &srcRect, &destRectBackgroung);
+    SDL_Rect srcRectbarra = {297, 56, 240, 46};
+    SDL_Rect destRectbarra = {0, 358, 640, 122};
 
     SDL_Rect src_rect = {0, 0, 640, 480};
-    SDL_Rect player_position = {60, 300, 200, 200}; //Retangulo que representa a posição do jogador
-    SDL_Rect enemy_position = {360, 90, 200, 200}; //Retangulo que representa a posição do inimigo
+    SDL_Rect player_position = {60, 250, 200, 200}; //Retangulo que representa a posição do jogador
+    SDL_Rect enemy_position = {360, 40, 200, 200}; //Retangulo que representa a posição do inimigo
     SDL_RenderCopy (renderer, player.sprite, NULL, &player_position);
     SDL_RenderCopy (renderer, enemy.sprite, NULL, &enemy_position);
+    SDL_RenderCopy (renderer, barra, &srcRectbarra, &destRectbarra);
 
     SDL_RenderPresent(renderer);
 }
