@@ -5,15 +5,20 @@
 #include "textures.h"
 #include "player.h"
 #include "colisao.h"
+#include "text.h"
 
 //variáveis globais
 SDL_Window* window = NULL;
 SDL_Renderer* renderer = NULL;
 bool dentro = true;
+bool dialogoAtivado = false;
 
 void init(){
     if(SDL_Init(SDL_INIT_EVERYTHING) < 0){
         printf("Could not initialize SDL: %s\n", SDL_GetError());
+    }
+    if(TTF_Init() == -1){
+        printf("Erro na inicialização do TTF: %s\n", TTF_GetError());
     }
     //Cria a janela
     window = SDL_CreateWindow("Pokemon",SDL_WINDOWPOS_UNDEFINED,SDL_WINDOWPOS_UNDEFINED,1280,720,0);
@@ -58,17 +63,22 @@ bool moveCameraFora(SDL_Rect* srcRect, Player* jogador){
 
 void moveCameraDentro(SDL_Rect* srcRect, Player* jogador,SDL_Rect* hahah){
     hahah->w = 220;
-    if(jogador->movingR && !colisaoDireitaG(srcRect)){
-        srcRect->x += 1;
-    }
-    if(jogador->movingL && !colisaoEsquerdaG(srcRect)){
-        srcRect->x -= 1;
-    }
-    if(jogador->movingU && !colisaoCimaG(srcRect)){
-        srcRect->y -= 1;
-    }
-    if(jogador->movingD && !colisaoBaixoG(srcRect)){
-        srcRect->y += 1;
+    if(!dialogoAtivado){
+        if(jogador->movingR && !colisaoDireitaG(srcRect)){
+            srcRect->x += 1;
+        }
+        if(jogador->movingL && !colisaoEsquerdaG(srcRect)){
+            srcRect->x -= 1;
+        }
+        if(jogador->movingU && !colisaoCimaG(srcRect)){
+            srcRect->y -= 1;
+            if(srcRect->y <= 390){
+                dialogoAtivado = true;
+            }
+        }
+        if(jogador->movingD && !colisaoBaixoG(srcRect)){
+            srcRect->y += 1;
+        }
     }
 }
 
@@ -137,9 +147,19 @@ int main(int argc, char* argv[]){
     SDL_Event event;
     bool quit = false;
     SDL_Texture* backs = loadIMG(renderer, "cidade.png");
+    SDL_Texture* dialogo = loadIMG(renderer,"dialogo.png");
+    const char* textoDialogo1 = "Parabens por chegar ate aqui! Mas sera que consegue";
+    const char* textoDialogo2 = "vencer meu time? Vamos descobrir!";
+    int charCount1 = 0;
+    int charCount2 = 0;
     Player jogador;
     initializePlayer(&jogador, renderer);
     SDL_Rect srcRect, destRect, destRectc;
+    SDL_Rect destRectDialogo;
+    destRectDialogo.x = 240;
+    destRectDialogo.y = 570;
+    destRectDialogo.w = 700;
+    destRectDialogo.h = 150;
     srcRect.x = 407;
     srcRect.y = 128;
     srcRect.w = 270;
@@ -153,7 +173,8 @@ int main(int argc, char* argv[]){
     destRectc.w = 96;
     destRectc.h = 90;
     int cFrame = 0;
-    Uint32 lastTime = SDL_GetTicks();
+    Uint32 lastTimePlayer = SDL_GetTicks();
+    Uint32 lastTimeText = SDL_GetTicks();
     while(!quit){
         handleEvents(&event, &quit, &jogador);
         SDL_RenderClear(renderer);
@@ -166,8 +187,15 @@ int main(int argc, char* argv[]){
             moveCameraDentro(&srcRect, &jogador,&srcRect);
         }
         SDL_RenderCopy(renderer, backs, &srcRect, &destRect);
-        animatePlayer(&jogador, renderer, &cFrame, &destRectc, &lastTime);
-        printf("%d %d\n", srcRect.x, srcRect.y);
+        animatePlayer(&jogador, renderer, &cFrame, &destRectc, &lastTimePlayer);
+        if(dialogoAtivado){
+            SDL_RenderCopy(renderer,dialogo,NULL,&destRectDialogo);
+            animateText(renderer, &lastTimeText,&charCount1,textoDialogo1,280,600);
+            if(charCount1 == strlen(textoDialogo1)){
+                animateText(renderer, &lastTimeText,&charCount2,textoDialogo2,280, 650);
+            }
+        }
+        //printf("%d %d\n", srcRect.x, srcRect.y);
         SDL_RenderPresent(renderer);
         SDL_Delay(16);
     }
