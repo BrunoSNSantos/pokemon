@@ -3,12 +3,14 @@
 #include <stdio.h>
 #include <stdbool.h>
 #include <SDL2/SDL_ttf.h>
+#include "text.h"
 
 
 #define SCREEN_WIDTH 640
 #define SCREEN_HEIGHT 480
 
 //variáveis globais
+
 SDL_Window* window = NULL;
 SDL_Renderer* renderer = NULL;
 bool movingR = false;
@@ -119,7 +121,6 @@ void render_text(const char *text, int x, int y) {
     SDL_FreeSurface(surface);
     SDL_DestroyTexture(texture);
 }
-
 //Função para inicializar o SDL
 bool init_SDL() {
     //Tratamento de erro para a caso a janela não inicialize
@@ -168,6 +169,8 @@ void attack(Pokemon *attacker, Pokemon *defender, Move move) {
 }
 
 // Função para renderizar
+int charCount = 0;
+const char* textoDialoogo = "teste";
 void render() {
     SDL_RenderClear(renderer);
     SDL_Rect srcRect = {2,21,242,114};
@@ -182,6 +185,9 @@ void render() {
     SDL_RenderCopy (renderer, player.sprite, NULL, &player_position);
     SDL_RenderCopy (renderer, enemy.sprite, NULL, &enemy_position);
     SDL_RenderCopy (renderer, barra, &srcRectbarra, &destRectbarra);
+
+    
+
 
     SDL_RenderPresent(renderer);
 }
