@@ -61,8 +61,8 @@ Move player_choose_move() {
 
         SDL_Rect moveBox = {50, 350, 540, 100};
 
-        render_text("1 - Choque do Trovao", 60, 360);
-        render_text("2 - Trovoada de Choques", 60, 390);
+        render_text("1 - Choque do Trovao", 400, 390);
+        render_text("2 - Trovoada de Choques", 400, 420);
 
         SDL_RenderPresent(renderer);
 
@@ -171,14 +171,14 @@ void attack(Pokemon *attacker, Pokemon *defender, Move move) {
 void render() {
     SDL_RenderClear(renderer);
     SDL_Rect srcRect = {2,21,242,114};
-    SDL_Rect destRectBackgroung = {0, -50, 640, 480};
+    SDL_Rect destRectBackgroung = {0, -80, 640, 480};
     SDL_RenderCopy(renderer, background, &srcRect, &destRectBackgroung);
     SDL_Rect srcRectbarra = {297, 56, 240, 46};
     SDL_Rect destRectbarra = {0, 358, 640, 122};
 
     SDL_Rect src_rect = {0, 0, 640, 480};
-    SDL_Rect player_position = {60, 250, 200, 200}; //Retangulo que representa a posição do jogador
-    SDL_Rect enemy_position = {360, 40, 200, 200}; //Retangulo que representa a posição do inimigo
+    SDL_Rect player_position = {60, 220, 200, 200}; //Retangulo que representa a posição do jogador
+    SDL_Rect enemy_position = {360, 10, 200, 200}; //Retangulo que representa a posição do inimigo
     SDL_RenderCopy (renderer, player.sprite, NULL, &player_position);
     SDL_RenderCopy (renderer, enemy.sprite, NULL, &enemy_position);
     SDL_RenderCopy (renderer, barra, &srcRectbarra, &destRectbarra);
