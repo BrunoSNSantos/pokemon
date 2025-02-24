@@ -52,10 +52,6 @@ Move player_choose_move() {
     bool move_chosen = false;
     Move selectedMove = choque_do_trovao;
 
-    printf("Selecione um ataque\n");
-    printf("[1] Choque do Trovão\n");
-    printf("[2] Trovoada de choques\n");
-    
     while(!move_chosen) {
         while (SDL_PollEvent(&e)) {
             if (e.type == SDL_QUIT) {
