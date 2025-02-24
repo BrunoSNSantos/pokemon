@@ -2,6 +2,7 @@
 #include <SDL2/SDL_image.h>
 #include <stdio.h>
 #include <stdbool.h>
+#include "inicio.h"
 #include "textures.h"
 #include "player.h"
 #include "colisao.h"
@@ -38,7 +39,7 @@ void init(){
 void mudarCenario(SDL_Texture** city,SDL_Rect* camera){
     *city = loadIMG(renderer, "Sootopolis Cityy.png");
     camera->x = 413;
-    camera->y = 724;
+    camera->y = 720;
 }
 
 //Função que move o jogador
@@ -61,7 +62,7 @@ bool moveCameraFora(SDL_Rect* srcRect, Player* jogador){
     return false;
 }
 
-void moveCameraDentro(SDL_Rect* srcRect, Player* jogador,SDL_Rect* hahah){
+bool moveCameraDentro(SDL_Rect* srcRect, Player* jogador,SDL_Rect* hahah){
     hahah->w = 220;
     if(!dialogoAtivado){
         if(jogador->movingR && !colisaoDireitaG(srcRect)){
@@ -78,8 +79,12 @@ void moveCameraDentro(SDL_Rect* srcRect, Player* jogador,SDL_Rect* hahah){
         }
         if(jogador->movingD && !colisaoBaixoG(srcRect)){
             srcRect->y += 1;
+            if(srcRect->x >=401 && srcRect->x <=425 && srcRect->y == 727){
+                return true;
+            }
         }
     }
+    return false;
 }
 
 //Função que lida com eventos
@@ -143,6 +148,40 @@ void handleEvents(SDL_Event* event, bool* quit, Player* jogador){
 
 //Função principal
 int main(int argc, char* argv[]){
+    iniciar();
+
+    SDL_Window* window1 = SDL_CreateWindow(
+        "Pokemon Ruby",
+        SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
+        1280, 720, SDL_WINDOW_SHOWN
+    );
+
+    if (!window1) {
+        printf("Erro ao criar janela: %s\n", SDL_GetError());
+        return 1;
+    }
+
+    SDL_Renderer* renderer1 = SDL_CreateRenderer(window1, -1, SDL_RENDERER_ACCELERATED);
+    if (!renderer1) {
+        printf("Erro ao criar renderizador: %s\n", SDL_GetError());
+        SDL_DestroyWindow(window);
+        return 1;
+    }
+
+    // Chama a função da tela de início e verifica se o jogador deseja iniciar
+    if (!telainicio(window1, renderer1)) {
+        printf("Saindo do jogo...\n");
+        SDL_DestroyRenderer(renderer1);
+        SDL_DestroyWindow(window1);
+        Mix_CloseAudio();
+        TTF_Quit();
+        IMG_Quit();
+        SDL_Quit();
+        return 0;
+    }
+    // Libera os recursos do jogo
+    SDL_DestroyRenderer(renderer1);
+    SDL_DestroyWindow(window1);
     init();
     SDL_Event event;
     bool quit = false;
@@ -195,7 +234,7 @@ int main(int argc, char* argv[]){
                 animateText(renderer, &lastTimeText,&charCount2,textoDialogo2,280, 650);
             }
         }
-        //printf("%d %d\n", srcRect.x, srcRect.y);
+        printf("%d %d\n", srcRect.x, srcRect.y);
         SDL_RenderPresent(renderer);
         SDL_Delay(16);
     }
