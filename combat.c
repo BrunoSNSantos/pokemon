@@ -14,6 +14,7 @@ SDL_Renderer* renderer = NULL;
 bool movingR = false;
 bool movingL = false;
 SDL_Texture *background = NULL;
+TTF_Font *font = NULL;
 
 typedef struct {
     char name[50];
@@ -47,16 +48,29 @@ SDL_Texture* load_texture(const char *path) {
 }
 
 //Função para o usuário escolher o golpe usado
+void render();
+void render_text(const char *text, int x, int y);  
 Move player_choose_move() {
     SDL_Event e;
     bool move_chosen = false;
     Move selectedMove = choque_do_trovao;
 
     while(!move_chosen) {
-        while (SDL_PollEvent(&e)) {
-            if (e.type == SDL_QUIT) {
-                exit(0);
-            } else if (e.type == SDL_KEYDOWN) {
+        render();
+
+        SDL_Rect moveBox = {50, 350, 540, 100};
+        SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+        SDL_RenderFillRect(renderer, &moveBox);
+        SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
+
+        render_text("1 - Choque do Trovão", 60, 360);
+        render_text("2 - Trovoada de Choques", 60, 390);
+
+        SDL_RenderPresent(renderer);
+
+        while (SDL_WaitEvent(&e)) {
+        if (e.type == SDL_QUIT) exit(0);
+            if (e.type == SDL_KEYDOWN) {
                 switch (e.key.keysym.sym) {
                     case SDLK_1:
                         selectedMove = choque_do_trovao;
@@ -67,6 +81,7 @@ Move player_choose_move() {
                         move_chosen = true;
                         break;
                 }
+                break;
             }
         }
     }
@@ -83,6 +98,28 @@ Move enemy_choose_move() {
     }
 }
 
+//função para renderizar texto
+void render_text(const char *text, int x, int y) {
+    if (!font) {
+        printf("Font is not loaded!\n");
+        return;
+    }
+
+    SDL_Color color = {255, 255, 255}; // White color
+    SDL_Surface *surface = TTF_RenderText_Solid(font, text, color);
+    if (!surface) {
+        printf("Failed to create text surface: %s\n", TTF_GetError());
+        return;
+    }
+
+    SDL_Texture *texture = SDL_CreateTextureFromSurface(renderer, surface);
+    SDL_Rect textRect = {x, y, surface->w, surface->h};
+    SDL_RenderCopy(renderer, texture, NULL, &textRect);
+
+    SDL_FreeSurface(surface);
+    SDL_DestroyTexture(texture);
+}
+
 //Função para inicializar o SDL
 bool init_SDL() {
     //Tratamento de erro para a caso a janela não inicialize
@@ -94,10 +131,24 @@ bool init_SDL() {
     if (!window) return false;
     renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED); //Cria um renderizador para permitir a criação de imagens dentro da janela
 
+    //inicializando o TTF
+    if (TTF_Init() == -1) {
+        printf("SDL_ttf could not initialize! TTF_Error: %s\n", TTF_GetError());
+        return false;
+    }
+    
+    //carregando fonte
+    font = TTF_OpenFont("assets/fonte.ttf", 24);
+    if (!font) {
+        printf("Failed to load font: %s\n", TTF_GetError());
+        return false;
+    }
+
     //carregando os assets
     background = load_texture("assets/battle_backgrounds.png");
     player.sprite = load_texture("assets/pikachu.png");
     enemy.sprite = load_texture("assets/blastoise_enemy.png");
+    
     return renderer != NULL && background != NULL && player.sprite != NULL && enemy.sprite != NULL;
 }
 
@@ -121,7 +172,7 @@ void render() {
     SDL_Rect srcRect = {2,21,242,114};
     SDL_RenderCopy(renderer, background, &srcRect, NULL);
 
-    //SDL_Rect src_rect = {0, 0, 640, 480};
+    SDL_Rect src_rect = {0, 0, 640, 480};
     SDL_Rect player_position = {60, 300, 200, 200}; //Retangulo que representa a posição do jogador
     SDL_Rect enemy_position = {360, 90, 200, 200}; //Retangulo que representa a posição do inimigo
     SDL_RenderCopy (renderer, player.sprite, NULL, &player_position);
@@ -167,6 +218,9 @@ void game_loop() {
 
 //Função para fechar a janela do jogo
 void close_SDL() {
+    TTF_CloseFont(font);
+    TTF_Quit();
+
     SDL_DestroyTexture(background);
     SDL_DestroyTexture(player.sprite);
     SDL_DestroyTexture(enemy.sprite);
