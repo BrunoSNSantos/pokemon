@@ -42,10 +42,15 @@ void mudarCenario(SDL_Texture** city,SDL_Rect* camera,bool state){
         *city = loadIMG(renderer, "Sootopolis Cityy.png");
         camera->x = 413;
         camera->y = 720;
+        Mix_Music* musicagym = Mix_LoadMUS("ginasio.mp3");
+        Mix_PlayMusic(musicagym,-1);
+
     }else{
         *city = loadIMG(renderer, "cidade.png");
         camera->x = 328;
         camera->y = 9;
+        Mix_Music* musicaprincipal = Mix_LoadMUS("main.mp3");
+        Mix_PlayMusic(musicaprincipal,-1);
     }
     
 }
@@ -134,7 +139,13 @@ void handleEvents(SDL_Event* event, bool* quit, Player* jogador, Mix_Music* musi
             else if (event -> key.keysym.sym == SDLK_m) {
                 musicaTocando = !musicaTocando;
                 if (musicaTocando) {
-                    Mix_PlayMusic(music, -1);
+                    if(dentro){
+                        Mix_PlayMusic(music, -1);
+                    }
+                    else{
+                        Mix_Music* musicagym = Mix_LoadMUS("ginasio.mp3");
+                        Mix_PlayMusic(musicagym, -1);
+                    }
                 } else {
                     Mix_HaltMusic();
                 }
