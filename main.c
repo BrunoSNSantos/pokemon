@@ -7,6 +7,7 @@
 #include "player.h"
 #include "colisao.h"
 #include "text.h"
+#include "personagens.h"
 
 //variáveis globais
 SDL_Window* window = NULL;
@@ -100,6 +101,7 @@ void handleEvents(SDL_Event* event, bool* quit, Player* jogador, Mix_Music* musi
         //Evento para fechar o jogo
         if(event->type == SDL_QUIT){
             *quit = true;
+            break;
         }
         
         //Evento ao pressionar tecla
@@ -195,6 +197,19 @@ int main(int argc, char* argv[]){
         SDL_Quit();
         return 0;
     }
+
+    // tela de selecao de personagem
+    if (!telaSelecaoPersonagem(window1, renderer1)) {
+        printf("Erro na tela de seleção de personagem...\n");
+        SDL_DestroyRenderer(renderer1);
+        SDL_DestroyWindow(window1);
+        Mix_CloseAudio();
+        TTF_Quit();
+        IMG_Quit();
+        SDL_Quit();
+        return 0;
+    }
+
     // Libera os recursos do jogo
     SDL_DestroyRenderer(renderer1);
     SDL_DestroyWindow(window1);
@@ -236,6 +251,7 @@ int main(int argc, char* argv[]){
     int cFrame = 0;
     Uint32 lastTimePlayer = SDL_GetTicks();
     Uint32 lastTimeText = SDL_GetTicks();
+    float scaleFactor = 2.0f;
     while(!quit){
         handleEvents(&event, &quit, &jogador, musicaprincipal);;
         SDL_RenderClear(renderer);
@@ -256,9 +272,9 @@ int main(int argc, char* argv[]){
         animatePlayer(&jogador, renderer, &cFrame, &destRectc, &lastTimePlayer);
         if(dialogoAtivado){
             SDL_RenderCopy(renderer,dialogo,NULL,&destRectDialogo);
-            animateText(renderer, &lastTimeText,&charCount1,textoDialogo1,280,600);
+            animateText(renderer, &lastTimeText, &charCount1, textoDialogo1, 280, 600, scaleFactor);
             if(charCount1 == strlen(textoDialogo1)){
-                animateText(renderer, &lastTimeText,&charCount2,textoDialogo2,280, 650);
+                animateText(renderer, &lastTimeText, &charCount2, textoDialogo2, 280, 650, scaleFactor);
             }
         }
         printf("%d %d\n", srcRect.x, srcRect.y);
