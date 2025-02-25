@@ -36,10 +36,17 @@ void init(){
     }
 }
 
-void mudarCenario(SDL_Texture** city,SDL_Rect* camera){
-    *city = loadIMG(renderer, "Sootopolis Cityy.png");
-    camera->x = 413;
-    camera->y = 720;
+void mudarCenario(SDL_Texture** city,SDL_Rect* camera,bool state){
+    if(state){
+        *city = loadIMG(renderer, "Sootopolis Cityy.png");
+        camera->x = 413;
+        camera->y = 720;
+    }else{
+        *city = loadIMG(renderer, "cidade.png");
+        camera->x = 328;
+        camera->y = 9;
+    }
+    
 }
 
 //Função que move o jogador
@@ -62,8 +69,7 @@ bool moveCameraFora(SDL_Rect* srcRect, Player* jogador){
     return false;
 }
 
-bool moveCameraDentro(SDL_Rect* srcRect, Player* jogador,SDL_Rect* hahah){
-    hahah->w = 220;
+bool moveCameraDentro(SDL_Rect* srcRect, Player* jogador){
     if(!dialogoAtivado){
         if(jogador->movingR && !colisaoDireitaG(srcRect)){
             srcRect->x += 1;
@@ -219,11 +225,16 @@ int main(int argc, char* argv[]){
         SDL_RenderClear(renderer);
         if(dentro){
             if(moveCameraFora(&srcRect, &jogador)){
-                mudarCenario(&backs,&srcRect);
+                mudarCenario(&backs,&srcRect,true);
                 dentro = false;
+                srcRect.w = 220;
             }
         }else{
-            moveCameraDentro(&srcRect, &jogador,&srcRect);
+            if(moveCameraDentro(&srcRect, &jogador)){
+                mudarCenario(&backs,&srcRect,false);
+                dentro = true;
+                srcRect.w = 270;
+            }
         }
         SDL_RenderCopy(renderer, backs, &srcRect, &destRect);
         animatePlayer(&jogador, renderer, &cFrame, &destRectc, &lastTimePlayer);
