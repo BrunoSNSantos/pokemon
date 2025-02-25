@@ -188,7 +188,9 @@ void attack(Pokemon *attacker, Pokemon *defender, Move move) {
     if (damage<0) {
         damage=1;
     }
-    defender->hp-=damage;
+    if(!battleIsOver){
+        defender->hp-=damage;
+    }
     if (defender->hp<0) {
         defender->hp = 0;
     }
