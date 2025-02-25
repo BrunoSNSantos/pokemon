@@ -2,6 +2,7 @@
 #include <SDL2/SDL_image.h>
 #include <stdio.h>
 #include <stdbool.h>
+#include "inicio.h"
 #include "textures.h"
 #include "player.h"
 #include "colisao.h"
@@ -12,6 +13,7 @@ SDL_Window* window = NULL;
 SDL_Renderer* renderer = NULL;
 bool dentro = true;
 bool dialogoAtivado = false;
+bool musicaTocando = true;
 
 void init(){
     if(SDL_Init(SDL_INIT_EVERYTHING) < 0){
@@ -35,10 +37,17 @@ void init(){
     }
 }
 
-void mudarCenario(SDL_Texture** city,SDL_Rect* camera){
-    *city = loadIMG(renderer, "Sootopolis Cityy.png");
-    camera->x = 413;
-    camera->y = 724;
+void mudarCenario(SDL_Texture** city,SDL_Rect* camera,bool state){
+    if(state){
+        *city = loadIMG(renderer, "Sootopolis Cityy.png");
+        camera->x = 413;
+        camera->y = 720;
+    }else{
+        *city = loadIMG(renderer, "cidade.png");
+        camera->x = 328;
+        camera->y = 9;
+    }
+    
 }
 
 //Função que move o jogador
@@ -61,8 +70,7 @@ bool moveCameraFora(SDL_Rect* srcRect, Player* jogador){
     return false;
 }
 
-void moveCameraDentro(SDL_Rect* srcRect, Player* jogador,SDL_Rect* hahah){
-    hahah->w = 220;
+bool moveCameraDentro(SDL_Rect* srcRect, Player* jogador){
     if(!dialogoAtivado){
         if(jogador->movingR && !colisaoDireitaG(srcRect)){
             srcRect->x += 1;
@@ -78,17 +86,22 @@ void moveCameraDentro(SDL_Rect* srcRect, Player* jogador,SDL_Rect* hahah){
         }
         if(jogador->movingD && !colisaoBaixoG(srcRect)){
             srcRect->y += 1;
+            if(srcRect->x >=401 && srcRect->x <=425 && srcRect->y == 727){
+                return true;
+            }
         }
     }
+    return false;
 }
 
 //Função que lida com eventos
-void handleEvents(SDL_Event* event, bool* quit, Player* jogador){
+void handleEvents(SDL_Event* event, bool* quit, Player* jogador, Mix_Music* music ){
     while(SDL_PollEvent(event)){
         //Evento para fechar o jogo
         if(event->type == SDL_QUIT){
             *quit = true;
         }
+        
         //Evento ao pressionar tecla
         if(event->type == SDL_KEYDOWN){
             if(event->key.keysym.sym == SDLK_RIGHT && !jogador->movingL && !jogador->movingU && !jogador->movingD){
@@ -118,6 +131,14 @@ void handleEvents(SDL_Event* event, bool* quit, Player* jogador){
             else if(event->key.keysym.sym == SDLK_s && !jogador->movingU && !jogador->movingR && !jogador->movingL){
                 jogador->movingD = true;
             }
+            else if (event -> key.keysym.sym == SDLK_m) {
+                musicaTocando = !musicaTocando;
+                if (musicaTocando) {
+                    Mix_PlayMusic(music, -1);
+                } else {
+                    Mix_HaltMusic();
+                }
+            }
         }
         //Evento ao soltar tecla
         else if(event->type == SDL_KEYUP){
@@ -143,7 +164,47 @@ void handleEvents(SDL_Event* event, bool* quit, Player* jogador){
 
 //Função principal
 int main(int argc, char* argv[]){
+    iniciar();
+
+    SDL_Window* window1 = SDL_CreateWindow(
+        "Pokemon Ruby",
+        SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
+        1280, 720, SDL_WINDOW_SHOWN
+    );
+
+    if (!window1) {
+        printf("Erro ao criar janela: %s\n", SDL_GetError());
+        return 1;
+    }
+
+    SDL_Renderer* renderer1 = SDL_CreateRenderer(window1, -1, SDL_RENDERER_ACCELERATED);
+    if (!renderer1) {
+        printf("Erro ao criar renderizador: %s\n", SDL_GetError());
+        SDL_DestroyWindow(window);
+        return 1;
+    }
+
+    // Chama a função da tela de início e verifica se o jogador deseja iniciar
+    if (!telainicio(window1, renderer1)) {
+        printf("Saindo do jogo...\n");
+        SDL_DestroyRenderer(renderer1);
+        SDL_DestroyWindow(window1);
+        Mix_CloseAudio();
+        TTF_Quit();
+        IMG_Quit();
+        SDL_Quit();
+        return 0;
+    }
+    // Libera os recursos do jogo
+    SDL_DestroyRenderer(renderer1);
+    SDL_DestroyWindow(window1);
     init();
+    Mix_Music* musicaprincipal = Mix_LoadMUS("main.mp3");
+    if (musicaprincipal) {
+        Mix_PlayMusic(musicaprincipal, -1);
+    } else {
+        printf("Erro ao carregar música: %s\n", Mix_GetError());
+    }
     SDL_Event event;
     bool quit = false;
     SDL_Texture* backs = loadIMG(renderer, "cidade.png");
@@ -176,15 +237,20 @@ int main(int argc, char* argv[]){
     Uint32 lastTimePlayer = SDL_GetTicks();
     Uint32 lastTimeText = SDL_GetTicks();
     while(!quit){
-        handleEvents(&event, &quit, &jogador);
+        handleEvents(&event, &quit, &jogador, musicaprincipal);;
         SDL_RenderClear(renderer);
         if(dentro){
             if(moveCameraFora(&srcRect, &jogador)){
-                mudarCenario(&backs,&srcRect);
+                mudarCenario(&backs,&srcRect,true);
                 dentro = false;
+                srcRect.w = 220;
             }
         }else{
-            moveCameraDentro(&srcRect, &jogador,&srcRect);
+            if(moveCameraDentro(&srcRect, &jogador)){
+                mudarCenario(&backs,&srcRect,false);
+                dentro = true;
+                srcRect.w = 270;
+            }
         }
         SDL_RenderCopy(renderer, backs, &srcRect, &destRect);
         animatePlayer(&jogador, renderer, &cFrame, &destRectc, &lastTimePlayer);
@@ -195,7 +261,7 @@ int main(int argc, char* argv[]){
                 animateText(renderer, &lastTimeText,&charCount2,textoDialogo2,280, 650);
             }
         }
-        //printf("%d %d\n", srcRect.x, srcRect.y);
+        printf("%d %d\n", srcRect.x, srcRect.y);
         SDL_RenderPresent(renderer);
         SDL_Delay(16);
     }

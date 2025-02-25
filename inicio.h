@@ -1,3 +1,6 @@
+#ifndef INICIO_H
+#define INICIO_H
+
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
 #include <SDL2/SDL_ttf.h>
@@ -5,5 +8,9 @@
 #include <stdio.h>
 #include <stdbool.h>
 
-void exibirImagem(bool skibidi, SDL_Renderer* toilet);
+// Declaração correta da função
+void iniciar();
+bool telainicio(SDL_Window* window, SDL_Renderer* renderer);
+
+#endif
 
