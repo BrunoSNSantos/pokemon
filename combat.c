@@ -238,6 +238,7 @@ void render() {
         sprintf(playerDamageText, "Pikachu tomou %d dano.", pastMoveEnemy.power);
         render_text(playerDamageText, 20, 60);
     }
+    
     renderHealthBar(renderer,130,172,enemy.hp,270);
     renderHealthBar(renderer,469,328,player.hp,250);
     if(battleIsOver){
