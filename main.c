@@ -13,6 +13,8 @@ SDL_Window* window = NULL;
 SDL_Renderer* renderer = NULL;
 bool dentro = true;
 bool dialogoAtivado = false;
+bool musicaTocando = true;
+
 
 void init(){
     if(SDL_Init(SDL_INIT_EVERYTHING) < 0){
@@ -88,12 +90,13 @@ bool moveCameraDentro(SDL_Rect* srcRect, Player* jogador,SDL_Rect* hahah){
 }
 
 //Função que lida com eventos
-void handleEvents(SDL_Event* event, bool* quit, Player* jogador){
+void handleEvents(SDL_Event* event, bool* quit, Player* jogador, Mix_Music* music ){
     while(SDL_PollEvent(event)){
         //Evento para fechar o jogo
         if(event->type == SDL_QUIT){
             *quit = true;
         }
+        
         //Evento ao pressionar tecla
         if(event->type == SDL_KEYDOWN){
             if(event->key.keysym.sym == SDLK_RIGHT && !jogador->movingL && !jogador->movingU && !jogador->movingD){
@@ -122,6 +125,14 @@ void handleEvents(SDL_Event* event, bool* quit, Player* jogador){
             //Checa se a letra S foi pressionada
             else if(event->key.keysym.sym == SDLK_s && !jogador->movingU && !jogador->movingR && !jogador->movingL){
                 jogador->movingD = true;
+            }
+            else if (event -> key.keysym.sym == SDLK_m) {
+                musicaTocando = !musicaTocando;
+                if (musicaTocando) {
+                    Mix_PlayMusic(music, -1);
+                } else {
+                    Mix_HaltMusic();
+                }
             }
         }
         //Evento ao soltar tecla
@@ -183,6 +194,12 @@ int main(int argc, char* argv[]){
     SDL_DestroyRenderer(renderer1);
     SDL_DestroyWindow(window1);
     init();
+    Mix_Music* musicaprincipal = Mix_LoadMUS("main.mp3");
+    if (musicaprincipal) {
+        Mix_PlayMusic(musicaprincipal, -1);
+    } else {
+        printf("Erro ao carregar música: %s\n", Mix_GetError());
+    }
     SDL_Event event;
     bool quit = false;
     SDL_Texture* backs = loadIMG(renderer, "cidade.png");
@@ -215,7 +232,7 @@ int main(int argc, char* argv[]){
     Uint32 lastTimePlayer = SDL_GetTicks();
     Uint32 lastTimeText = SDL_GetTicks();
     while(!quit){
-        handleEvents(&event, &quit, &jogador);
+        handleEvents(&event, &quit, &jogador, musicaprincipal);
         SDL_RenderClear(renderer);
         if(dentro){
             if(moveCameraFora(&srcRect, &jogador)){
