@@ -2,6 +2,7 @@
 #include <SDL2/SDL_image.h>
 #include <stdio.h>
 #include <stdbool.h>
+#include <string.h>
 #include <SDL2/SDL_ttf.h>
 #include "text.h"
 
@@ -17,7 +18,9 @@ bool movingR = false;
 bool movingL = false;
 SDL_Texture *background = NULL;
 SDL_Texture *barra = NULL;
+SDL_Texture* barra1 = NULL;
 TTF_Font *font = NULL;
+bool battleIsOver = false;
 
 typedef struct {
     char name[50];
@@ -30,13 +33,17 @@ typedef struct {
     int power;
 } Move;
 
+Move pastMovePlayer = {"hi", 0};
+Move pastMoveEnemy = {"hi",0};
+
 //dados do jogador, adversário e golpes armazenados em arrays
-Pokemon player = {"Pikachu", 100, 30, 20 , 30, NULL};
-Pokemon enemy = {"Blastoise", 120, 15, 30, 10, NULL};
+Pokemon player = {"Pikachu", 250, 30, 20 , 30, NULL};
+Pokemon enemy = {"Blastoise", 270, 15, 30, 10, NULL};
 Move choque_do_trovao = {"Choque do Trovao", 20};
 Move hidro_canhao = {"Hidro Canhao", 30};
 Move trovoada_de_choques = {"Trovoada de Choques", 25};
 Move raio_congelante = {"Raio Congelante", 35};
+
 
 //Função para carregar as texturas
 SDL_Texture* load_texture(const char *path) {
@@ -53,6 +60,8 @@ SDL_Texture* load_texture(const char *path) {
 //Função para o usuário escolher o golpe usado
 void render();
 void render_text(const char *text, int x, int y);  
+
+
 Move player_choose_move() {
     SDL_Event e;
     bool move_chosen = false;
@@ -65,7 +74,6 @@ Move player_choose_move() {
 
         render_text("1 - Choque do Trovao", 400, 390);
         render_text("2 - Trovoada de Choques", 400, 420);
-
         SDL_RenderPresent(renderer);
 
         while (SDL_WaitEvent(&e)) {
@@ -91,11 +99,30 @@ Move player_choose_move() {
 //Função para randomizar os golpes utilizados pelo oponente
 Move enemy_choose_move() {
     int choice = rand() % 2;
+
     if (choice == 0) {
+        pastMoveEnemy = hidro_canhao;
         return hidro_canhao;
     } else {
+        pastMoveEnemy = raio_congelante;
         return raio_congelante;
     }
+}
+
+void renderHealthBar(SDL_Renderer *renderer, int x, int y, int health, int maxHealth) {
+    // Health bar background
+    SDL_Rect backgroundRect = {x, y, 157, 14};
+    SDL_SetRenderDrawColor(renderer, 50, 50, 50, 255);  // Dark grey
+    SDL_RenderFillRect(renderer, &backgroundRect);
+
+    // Health bar foreground (based on current health)
+    SDL_Rect healthRect = {x, y, (health * 157) / maxHealth, 13};
+    if(health >= maxHealth/2){
+        SDL_SetRenderDrawColor(renderer,0,255,0,255);
+    }else{
+        SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255); 
+    } // Red
+    SDL_RenderFillRect(renderer, &healthRect);
 }
 
 //função para renderizar texto
@@ -139,7 +166,7 @@ bool init_SDL() {
     }
     
     //carregando fonte
-    font = TTF_OpenFont("assets/fonte.ttf", 24);
+    font = TTF_OpenFont("assets/fonte.ttf", 12);
     if (!font) {
         printf("Failed to load font: %s\n", TTF_GetError());
         return false;
@@ -147,6 +174,7 @@ bool init_SDL() {
 
     //carregando os assets
     barra = load_texture("assets/barra.png");
+    barra1 = load_texture("assets/barra1.png");
     background = load_texture("assets/battle_backgrounds.png");
     player.sprite = load_texture("assets/pikachu.png");
     enemy.sprite = load_texture("assets/blastoise_enemy.png");
@@ -160,12 +188,12 @@ void attack(Pokemon *attacker, Pokemon *defender, Move move) {
     if (damage<0) {
         damage=1;
     }
-    defender->hp-=damage;
+    if(!battleIsOver){
+        defender->hp-=damage;
+    }
     if (defender->hp<0) {
         defender->hp = 0;
     }
-    printf("%s used %s! %s took %d damage and has %d HP left.\n",
-        attacker->name, move.name, defender->name, damage, defender->hp);
 }
 
 // Função para renderizar
@@ -177,7 +205,11 @@ void render() {
     SDL_Rect destRectBackgroung = {0, -80, 640, 480};
     SDL_RenderCopy(renderer, background, &srcRect, &destRectBackgroung);
     SDL_Rect srcRectbarra = {297, 56, 240, 46};
+    SDL_Rect srcRectvida = {3,3,93,27};
     SDL_Rect destRectbarra = {0, 358, 640, 122};
+    SDL_Rect destRectvida = {5, 125, 300, 80};
+    SDL_Rect destRectvida2 = {345, 280, 300, 80};
+    SDL_Rect destRectbarra2 = {0, 0, 320, 122};
 
     SDL_Rect src_rect = {0, 0, 640, 480};
     SDL_Rect player_position = {60, 220, 200, 200}; //Retangulo que representa a posição do jogador
@@ -185,6 +217,40 @@ void render() {
     SDL_RenderCopy (renderer, player.sprite, NULL, &player_position);
     SDL_RenderCopy (renderer, enemy.sprite, NULL, &enemy_position);
     SDL_RenderCopy (renderer, barra, &srcRectbarra, &destRectbarra);
+    SDL_RenderCopy (renderer, barra, &srcRectvida, &destRectvida);
+    SDL_RenderCopy (renderer, barra, &srcRectvida, &destRectvida2);
+    SDL_RenderCopy (renderer, barra1, &srcRectbarra, &destRectbarra2);
+
+    if (pastMovePlayer.power != 0 && !battleIsOver) {
+        char playerMoveText[100];
+        sprintf(playerMoveText, "Pikachu usou %s!", pastMovePlayer.name);
+        render_text(playerMoveText, 20, 400);
+
+        char enemyDamageText[100];
+        sprintf(enemyDamageText, "Blastoise tomou %d dano.", pastMovePlayer.power + 10);
+        render_text(enemyDamageText, 20, 430);
+    }
+
+    if (pastMoveEnemy.power != 0 && !battleIsOver) {
+        char enemyMoveText[100];
+        sprintf(enemyMoveText, "Blastoise usou %s!", pastMoveEnemy.name);
+        render_text(enemyMoveText, 20, 30);
+
+        char playerDamageText[100];
+        sprintf(playerDamageText, "Pikachu tomou %d dano.", pastMoveEnemy.power);
+        render_text(playerDamageText, 20, 60);
+    }
+    
+    renderHealthBar(renderer,130,172,enemy.hp,270);
+    renderHealthBar(renderer,469,328,player.hp,250);
+    if(battleIsOver){
+        if(player.hp == 0){
+            render_text("Blastoise ganhou", 20, 400);
+        }
+        else{
+            render_text("Pikachu ganhou", 20, 400);
+        }
+    }
 
     
 
@@ -193,6 +259,8 @@ void render() {
 }
 
 //loop do jogo
+
+
 void game_loop() {
     SDL_Event e;
     bool running = true;
@@ -206,24 +274,30 @@ void game_loop() {
         if (player.speed>enemy.speed) {
             Move chosenMove = player_choose_move();
             attack(&player, &enemy, chosenMove);
+            pastMovePlayer = chosenMove;
             if (enemy.hp>0) {
                 Move chosenMove = enemy_choose_move();
                 attack(&enemy, &player, chosenMove);
+                pastMoveEnemy = chosenMove;
             }
         } else {
             Move chosenMove = enemy_choose_move();
             attack(&enemy, &player, chosenMove);
+            pastMoveEnemy = chosenMove;
             if (player.hp>0) {
                 Move chosenMove = player_choose_move();
                 attack(&player, &enemy, chosenMove);
+                pastMovePlayer = chosenMove;
             }
         }
         if (player.hp == 0 || enemy.hp == 0) {
+            if(player.hp == 0 ) printf("PIkachu lost\n");
+            else printf("Blastoise lost\n");
             printf("Battle Over!");
-            running = false;
+            battleIsOver = true;
         }
 
-        SDL_Delay(1000);
+        SDL_Delay(16);
     }
 }
 
