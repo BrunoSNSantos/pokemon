@@ -237,7 +237,7 @@ int main(int argc, char* argv[]){
     Uint32 lastTimePlayer = SDL_GetTicks();
     Uint32 lastTimeText = SDL_GetTicks();
     while(!quit){
-        handleEvents(&event, &quit, &jogador, musicaprincipal);
+        handleEvents(&event, &quit, &jogador, musicaprincipal);;
         SDL_RenderClear(renderer);
         if(dentro){
             if(moveCameraFora(&srcRect, &jogador)){
