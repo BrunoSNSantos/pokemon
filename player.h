@@ -16,5 +16,5 @@ typedef struct{
     SDL_Texture* down;
 } Player;
 
-void initializePlayer(Player* player,SDL_Renderer* renderer);
+void initializePlayer(Player* player, SDL_Renderer* renderer, bool isBoy);
 void animatePlayer(Player* player,SDL_Renderer* renderer, int* cFrame,SDL_Rect* destRect,Uint32* lastTime);

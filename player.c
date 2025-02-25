@@ -1,14 +1,25 @@
 #include "player.h"
 
-void initializePlayer(Player* player,SDL_Renderer* renderer){
+void initializePlayer(Player* player, SDL_Renderer* renderer, bool isBoy) {
     player->movingR = false;
     player->movingL = false;
     player->movingU = false;
     player->movingD = false;
-    player->right = loadIMG(renderer,"assets/WalkR.png");
-    player->left = loadIMG(renderer,"assets/WalkL.png");
-    player->up = loadIMG(renderer,"assets/WalkU.png");
-    player->down = loadIMG(renderer,"assets/WalkD.png");
+
+    if (isBoy) {
+        // menino
+        player->right = loadIMG(renderer, "assets/WalkR.png");
+        player->left = loadIMG(renderer, "assets/WalkL.png");
+        player->up = loadIMG(renderer, "assets/WalkU.png");
+        player->down = loadIMG(renderer, "assets/WalkD.png");
+    } else {
+        // menina
+        player->right = loadIMG(renderer, "selecaopersonagem/WalkR - G.png");
+        player->left = loadIMG(renderer, "selecaopersonagem/WalkL - G.png");
+        player->up = loadIMG(renderer, "selecaopersonagem/WalkU - G.png");
+        player->down = loadIMG(renderer, "selecaopersonagem/WalkD - G.png");
+    }
+
     player->idleState = 0;
 }
 

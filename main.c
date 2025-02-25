@@ -229,7 +229,7 @@ int main(int argc, char* argv[]){
     int charCount1 = 0;
     int charCount2 = 0;
     Player jogador;
-    initializePlayer(&jogador, renderer);
+    initializePlayer(&jogador, renderer, false);
     SDL_Rect srcRect, destRect, destRectc;
     SDL_Rect destRectDialogo;
     destRectDialogo.x = 240;
