@@ -60,8 +60,8 @@ Pokemon player = {"Pikachu", 250, 250, 30, 20 , 30, NULL};
 Pokemon enemy = {"Blastoise", 270, 270, 15, 30, 10, NULL};
 Move choque_do_trovao = {"Choque do Trovao", 20, TYPE_ELETRIC};
 Move hidro_canhao = {"Hidro Canhao", 30, TYPE_WATER};
-Move trovoada_de_choques = {"Trovoada de Choques", 25, TYPE_ELETRIC};
-Move raio_congelante = {"Raio Congelante", 35, TYPE_ICE};
+Move trovoada_de_choques = {"Trovoada de Choques", 35, TYPE_ELETRIC};
+Move raio_congelante = {"Raio Congelante", 30, TYPE_ICE};
 
 
 //Função para carregar as texturas
