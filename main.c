@@ -192,7 +192,7 @@ void handleEvents(SDL_Event* event, bool* quit, Player* jogador, Mix_Music* musi
                     Mix_Music* musicaBatalha = Mix_LoadMUS("battle.mp3");
                     Mix_Music* musicaVitoria = Mix_LoadMUS("vitoria.mp3");
                     Mix_PlayMusic(musicaBatalha, -1);
-                    skibidi(true);
+                    iniciarCombate(true);
                     Mix_PlayMusic(musicaVitoria, -1);
                     dialogoAtivado1 = false;
                     dialogoAtivado2 = true;

@@ -45,4 +45,4 @@ void updateParticles();
 void renderParticles();
 void game_loop();
 void close_SDL();
-int skibidi(bool combate);
+int iniciarCombate(bool combate);

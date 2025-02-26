@@ -392,7 +392,7 @@ void close_SDL() {
     SDL_DestroyWindow(window3);
 }
 
-int skibidi(bool combate) { 
+int iniciarCombate(bool combate) { 
         if(combate){
         if (!init_SDL()) return -1;
         game_loop();
