@@ -35,7 +35,7 @@ O projeto foi desenvolvido com a orientação do professor Danilo Reis de Vascon
 Este projeto está licenciado sob a MIT License.
 
 ## Autores
-- Anderson Oliveira
+- Anderson de Oliveira
 - Bruno Salomão
 - Camilla Peixoto
 - Eduardo Monteiro
@@ -79,7 +79,7 @@ The project was developed with guidance from Professor Danilo Reis de Vasconcelo
 This project is licensed under the MIT License.
 
 ## Authors
-- Anderson Oliveira
+- Anderson de Oliveira
 - Bruno Salomão
 - Camilla Peixoto
 - Eduardo Monteiro
