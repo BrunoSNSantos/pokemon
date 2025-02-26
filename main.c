@@ -199,16 +199,7 @@ int main(int argc, char* argv[]){
     }
 
     // tela de selecao de personagem
-    if (!telaSelecaoPersonagem(window1, renderer1)) {
-        printf("Erro na tela de seleção de personagem...\n");
-        SDL_DestroyRenderer(renderer1);
-        SDL_DestroyWindow(window1);
-        Mix_CloseAudio();
-        TTF_Quit();
-        IMG_Quit();
-        SDL_Quit();
-        return 0;
-    }
+    int choice = telaSelecaoPersonagem(window1, renderer1);
 
     // Libera os recursos do jogo
     SDL_DestroyRenderer(renderer1);
@@ -229,7 +220,7 @@ int main(int argc, char* argv[]){
     int charCount1 = 0;
     int charCount2 = 0;
     Player jogador;
-    initializePlayer(&jogador, renderer, false);
+    initializePlayer(&jogador, renderer, !choice);
     SDL_Rect srcRect, destRect, destRectc;
     SDL_Rect destRectDialogo;
     destRectDialogo.x = 240;

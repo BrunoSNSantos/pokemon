@@ -3,6 +3,6 @@
 
 #include <SDL2/SDL.h>
 
-bool telaSelecaoPersonagem(SDL_Window* window, SDL_Renderer* renderer);
+int telaSelecaoPersonagem(SDL_Window* window, SDL_Renderer* renderer);
 
 #endif

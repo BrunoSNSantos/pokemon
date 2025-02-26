@@ -6,12 +6,11 @@
 #include "personagens.h"
 #include "text.h" 
 
-bool telaSelecaoPersonagem(SDL_Window* window, SDL_Renderer* renderer1) {
+int telaSelecaoPersonagem(SDL_Window* window, SDL_Renderer* renderer1) {
     // carregar as imagens
     SDL_Surface* bgSurface = IMG_Load("selecaopersonagem/fundoEscolha.png");
     if (!bgSurface) {
         printf("Erro ao carregar imagem de fundo: %s\n", IMG_GetError());
-        return false;
     }
 
     SDL_Texture* bgTexture = SDL_CreateTextureFromSurface(renderer1, bgSurface);
@@ -19,14 +18,12 @@ bool telaSelecaoPersonagem(SDL_Window* window, SDL_Renderer* renderer1) {
 
     if (!bgTexture) {
         printf("Erro ao criar textura a partir da superfície: %s\n", SDL_GetError());
-        return false;
     }
 
     SDL_Surface* boySurface = IMG_Load("selecaopersonagem/menino.png");
     if (!boySurface) {
         printf("Erro ao carregar a imagem do menino: %s\n", IMG_GetError());
         SDL_DestroyTexture(bgTexture);
-        return false;
     }
 
     SDL_Texture* boyTexture = SDL_CreateTextureFromSurface(renderer1, boySurface);
@@ -35,7 +32,6 @@ bool telaSelecaoPersonagem(SDL_Window* window, SDL_Renderer* renderer1) {
     if (!boyTexture) {
         printf("Erro ao criar textura da imagem do menino: %s\n", SDL_GetError());
         SDL_DestroyTexture(bgTexture);
-        return false;
     }
 
     SDL_Surface* girlSurface = IMG_Load("selecaopersonagem/menina.png");
@@ -43,7 +39,6 @@ bool telaSelecaoPersonagem(SDL_Window* window, SDL_Renderer* renderer1) {
         printf("Erro ao carregar a imagem da menina: %s\n", IMG_GetError());
         SDL_DestroyTexture(boyTexture);
         SDL_DestroyTexture(bgTexture);
-        return false;
     }
 
     SDL_Texture* girlTexture = SDL_CreateTextureFromSurface(renderer1, girlSurface);
@@ -53,7 +48,6 @@ bool telaSelecaoPersonagem(SDL_Window* window, SDL_Renderer* renderer1) {
         printf("Erro ao criar textura da imagem da menina: %s\n", SDL_GetError());
         SDL_DestroyTexture(boyTexture);
         SDL_DestroyTexture(bgTexture);
-        return false;
     }
 
     SDL_Surface* arrowSurface = IMG_Load("selecaopersonagem/seta.png");
@@ -62,7 +56,6 @@ bool telaSelecaoPersonagem(SDL_Window* window, SDL_Renderer* renderer1) {
         SDL_DestroyTexture(girlTexture);
         SDL_DestroyTexture(boyTexture);
         SDL_DestroyTexture(bgTexture);
-        return false;
     }
 
     SDL_Texture* arrowTexture = SDL_CreateTextureFromSurface(renderer1, arrowSurface);
@@ -73,7 +66,6 @@ bool telaSelecaoPersonagem(SDL_Window* window, SDL_Renderer* renderer1) {
         SDL_DestroyTexture(girlTexture);
         SDL_DestroyTexture(boyTexture);
         SDL_DestroyTexture(bgTexture);
-        return false;
     }
 
     // posições iniciais das imagens e seta
@@ -88,7 +80,6 @@ bool telaSelecaoPersonagem(SDL_Window* window, SDL_Renderer* renderer1) {
         SDL_DestroyTexture(girlTexture);
         SDL_DestroyTexture(boyTexture);
         SDL_DestroyTexture(bgTexture);
-        return false;
     }
 
     const char* textoLinha1 = "Voce e menino?";
@@ -170,5 +161,5 @@ bool telaSelecaoPersonagem(SDL_Window* window, SDL_Renderer* renderer1) {
     SDL_DestroyTexture(bgTexture);
     TTF_CloseFont(font);
 
-    return true;
+    return arrowPosition;
 }
