@@ -61,8 +61,6 @@ Move player_choose_move() {
 
         SDL_Rect moveBox = {50, 350, 540, 100};
 
-        render_text("1 - Choque do Trovao", 400, 390);
-        render_text("2 - Trovoada de Choques", 400, 420);
         SDL_RenderPresent(renderer3);
 
         while (SDL_WaitEvent(&e)) {
@@ -98,18 +96,18 @@ Move enemy_choose_move() {
 }
 
 void renderHealthBar(int x, int y, int health, int displayed_health, int maxHealth) {
-    // Health bar background
+    // Background da barra de vida
     SDL_Rect backgroundRect = {x, y, 157, 14};
     SDL_SetRenderDrawColor(renderer3, 50, 50, 50, 255);  // Dark grey
     SDL_RenderFillRect(renderer3, &backgroundRect);
 
-    // Health bar foreground (based on current health)
+    // Barra de vida
     SDL_Rect healthRect = {x, y, (displayed_health * 157) / maxHealth, 13};
     if(displayed_health >= maxHealth/2){
         SDL_SetRenderDrawColor(renderer3,0,255,0,255);
     }else{
         SDL_SetRenderDrawColor(renderer3, 255, 0, 0, 255); 
-    } // Red
+    } // Ficar vermelho
     SDL_RenderFillRect(renderer3, &healthRect);
 }
 
@@ -272,6 +270,12 @@ void render() {
     SDL_RenderCopy (renderer3, barra, &srcRectvida, &destRectvida);
     SDL_RenderCopy (renderer3, barra, &srcRectvida, &destRectvida2);
     SDL_RenderCopy (renderer3, barra1, &srcRectbarra, &destRectbarra2);
+    render_text("1 - Choque do Trovao", 400, 390);
+    render_text("2 - Trovoada de Choques", 400, 420);
+    render_text("Pikachu", 420, 290);
+    render_text("Blastoise",80,135);
+    render_text("10", 605,295);
+    render_text("10",270, 140);
 
     if (pastMovePlayer.power != 0 && !battleIsOver) {
         char playerMoveText[100];

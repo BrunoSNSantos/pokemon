@@ -10,3 +10,7 @@ bool colisaoCimaG(SDL_Rect* rect); // nao pode se mover para cima no ginásio
 bool colisaoBaixoG(SDL_Rect* rect); // nao pode se mover para baixo no ginásio
 bool colisaoEsquerdaG(SDL_Rect* rect); // nao pode se mover para a esquerda no ginásio
 bool colisaoDireitaG(SDL_Rect* rect); // nao pode se mover para a direita no ginásio
+bool colisaCimaC(SDL_Rect* rect);
+bool colisaBaixoC(SDL_Rect* rect);
+bool colisaEsquerdaC(SDL_Rect* rect);
+bool colisaDireitaC(SDL_Rect* rect);

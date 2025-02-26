@@ -47,7 +47,7 @@ void init(){
 
 void mudarCenario(SDL_Texture** city,SDL_Rect* camera,int state,SDL_Rect* destRect){
     if(state == 1){
-        *city = loadIMG(renderer, "Sootopolis Cityy.png");
+        *city = loadIMG(renderer, "Sootopolis_Cityyy.png");
         camera->x = 413;
         camera->y = 720;
         Mix_Music* musicagym = Mix_LoadMUS("ginasio.mp3");
@@ -132,8 +132,8 @@ bool moveCameraDentroCasa(SDL_Rect* srcRect, Player* jogador){
         if(jogador->movingL){
             srcRect->x -= 1;
         }
-        if(jogador->movingU){
-            srcRect->y -= 1;
+        if(jogador->movingU && !colisaCimaC(srcRect)){
+            srcRect->y -= 1;  
             if(srcRect->x >235 && srcRect->x < 287 && srcRect->y < 95){
                 dialogoAtivado3 = true;
             }
