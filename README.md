@@ -7,7 +7,7 @@ Este projeto é um mini game de Pokémon desenvolvido para a disciplina de progr
 Para executar o jogo, siga os passos abaixo:
 
 1. Necessário ter um compilador C instalado no seu sistema (como GCC).
-2. Instale a bibliote SDL2, utilizada no projeto.
+2. Install the SDL2 library.
 3. Clone este repositório:
    ```sh
    git clone https://github.com/BrunoSNSantos/pokemon.git
@@ -35,7 +35,7 @@ O projeto foi desenvolvido com a orientação do professor Danilo Reis de Vascon
 Este projeto está licenciado sob a MIT License.
 
 ## Autores
-- Anderson
+- Anderson Oliveira
 - Bruno Salomão
 - Camilla Peixoto
 - Eduardo Monteiro
@@ -79,7 +79,7 @@ The project was developed with guidance from Professor Danilo Reis de Vasconcelo
 This project is licensed under the MIT License.
 
 ## Authors
-- Anderson
+- Anderson Oliveira
 - Bruno Salomão
 - Camilla Peixoto
 - Eduardo Monteiro
