@@ -22,6 +22,7 @@ bool musicaTocando = true;
 bool jaLutou = false;
 int charCount3 = 0;
 int charCount4 = 0;
+int charCount5 = 0;
 
 void init(){
     if(SDL_Init(SDL_INIT_EVERYTHING) < 0){
@@ -192,7 +193,7 @@ void handleEvents(SDL_Event* event, bool* quit, Player* jogador, Mix_Music* musi
                     Mix_Music* musicaBatalha = Mix_LoadMUS("battle.mp3");
                     Mix_Music* musicaVitoria = Mix_LoadMUS("vitoria.mp3");
                     Mix_PlayMusic(musicaBatalha, -1);
-                    skibidi(true);
+                    iniciarCombate(true);
                     Mix_PlayMusic(musicaVitoria, -1);
                     dialogoAtivado1 = false;
                     dialogoAtivado2 = true;
@@ -204,6 +205,10 @@ void handleEvents(SDL_Event* event, bool* quit, Player* jogador, Mix_Music* musi
                 if(charCount4 == 45){
                     dialogoAtivado3 = false;
                     charCount4 = 0;
+                }
+                if(charCount5 == 50){
+                    dialogoAtivado1 = false;
+                    charCount5 = 0;
                 }
             }
             else if (event -> key.keysym.sym == SDLK_m) {
@@ -298,6 +303,7 @@ int main(int argc, char* argv[]){
     const char* textoDialogo3 = "parabens por me derrotar!";
     const char* textoDialogo4 = "Voce ja ouviu a lenda do treinador da cidade?";
     const char* textoDialogo5 = "Voce realmente derrotou o lendario treinador?";
+    const char* textoDialogo6 = "Parabens, ainda nao acredito que voce me derrotou!";
     int charCount1 = 0;
     int charCount2 = 0;
     Player jogador;
@@ -359,9 +365,13 @@ int main(int argc, char* argv[]){
         //Três condicionais que verificam se algum dos diálogos está ativado para exibir eles na tela
         if(dialogoAtivado1){
             SDL_RenderCopy(renderer,dialogo,NULL,&destRectDialogo);
-            animateText(renderer, &lastTimeText,&charCount1,textoDialogo1,280,600,2.0);
-            if(charCount1 == strlen(textoDialogo1)){
-                animateText(renderer, &lastTimeText,&charCount2,textoDialogo2,280, 650,2.0);
+            if(!jaLutou){
+                animateText(renderer, &lastTimeText,&charCount1,textoDialogo1,280,600,2.0);
+                if(charCount1 == strlen(textoDialogo1)){
+                    animateText(renderer, &lastTimeText,&charCount2,textoDialogo2,280, 650,2.0);
+            }
+            }else{
+                animateText(renderer, &lastTimeText,&charCount5,textoDialogo6,280,600,2.0);
             }
         }
         if(dialogoAtivado2){
@@ -377,7 +387,7 @@ int main(int argc, char* argv[]){
             }
         }
 
-        printf("%d %d\n", srcRect.x, srcRect.y);
+       // printf("%d %d\n", srcRect.x, srcRect.y);
         SDL_RenderPresent(renderer);
         SDL_Delay(16);
     }
