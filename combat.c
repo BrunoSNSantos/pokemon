@@ -1,53 +1,23 @@
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_image.h>
-#include <stdio.h>
-#include <stdbool.h>
-#include <string.h>
-#include <SDL2/SDL_ttf.h>
-#include "text.h"
+#include "combate.h"
 
 #define SCREEN_WIDTH 640
 #define SCREEN_HEIGHT 480
 
 //variáveis globais
-SDL_Window* window = NULL;
-SDL_Renderer* renderer = NULL;
-bool movingR = false;
-bool movingL = false;
+SDL_Window* window3 = NULL;
+SDL_Renderer* renderer3 = NULL;
 SDL_Texture *background = NULL;
 SDL_Texture *barra = NULL;
 SDL_Texture* barra1 = NULL;
 TTF_Font *font = NULL;
 bool battleIsOver = false;
+bool running = true;
 
 //variáveis para o efeito de balançar durante o combate
 int shakeOffset = 0;
 int shakeDuration = 0;
 
-typedef struct {
-    char name[50];
-    int hp, displayed_hp, speed, attack, defense;
-    SDL_Texture *sprite;
-} Pokemon;
 
-typedef enum {
-    TYPE_ELETRIC,
-    TYPE_ICE,
-    TYPE_WATER,
-} AttackType;
-
-typedef struct {
-    char name[50];
-    int power;
-    AttackType type;
-} Move;
-
-typedef struct {
-    int x, y;
-    int dx, dy;
-    int lifetime;
-    Uint8 r, g, b;
-} Particle;
 
 #define MAX_PARTICLES 20
 Particle particles[MAX_PARTICLES];
@@ -71,7 +41,7 @@ SDL_Texture* load_texture(const char *path) {
         printf("Failed to load image: %s\n", IMG_GetError());
         return NULL;
     }
-    SDL_Texture *texture = SDL_CreateTextureFromSurface(renderer, surface);
+    SDL_Texture *texture = SDL_CreateTextureFromSurface(renderer3, surface);
     SDL_FreeSurface(surface);
     return texture;
 }
@@ -93,10 +63,9 @@ Move player_choose_move() {
 
         render_text("1 - Choque do Trovao", 400, 390);
         render_text("2 - Trovoada de Choques", 400, 420);
-        SDL_RenderPresent(renderer);
+        SDL_RenderPresent(renderer3);
 
         while (SDL_WaitEvent(&e)) {
-        if (e.type == SDL_QUIT) exit(0);
             if (e.type == SDL_KEYDOWN) {
                 switch (e.key.keysym.sym) {
                     case SDLK_1:
@@ -128,20 +97,20 @@ Move enemy_choose_move() {
     }
 }
 
-void renderHealthBar(SDL_Renderer *renderer, int x, int y, int health, int displayed_health, int maxHealth) {
+void renderHealthBar(int x, int y, int health, int displayed_health, int maxHealth) {
     // Health bar background
     SDL_Rect backgroundRect = {x, y, 157, 14};
-    SDL_SetRenderDrawColor(renderer, 50, 50, 50, 255);  // Dark grey
-    SDL_RenderFillRect(renderer, &backgroundRect);
+    SDL_SetRenderDrawColor(renderer3, 50, 50, 50, 255);  // Dark grey
+    SDL_RenderFillRect(renderer3, &backgroundRect);
 
     // Health bar foreground (based on current health)
     SDL_Rect healthRect = {x, y, (displayed_health * 157) / maxHealth, 13};
     if(displayed_health >= maxHealth/2){
-        SDL_SetRenderDrawColor(renderer,0,255,0,255);
+        SDL_SetRenderDrawColor(renderer3,0,255,0,255);
     }else{
-        SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255); 
+        SDL_SetRenderDrawColor(renderer3, 255, 0, 0, 255); 
     } // Red
-    SDL_RenderFillRect(renderer, &healthRect);
+    SDL_RenderFillRect(renderer3, &healthRect);
 }
 
 //função para o hp diminuir gradualmente
@@ -166,31 +135,21 @@ void render_text(const char *text, int x, int y) {
         return;
     }
 
-    SDL_Texture *texture = SDL_CreateTextureFromSurface(renderer, surface);
+    SDL_Texture *texture = SDL_CreateTextureFromSurface(renderer3, surface);
     SDL_Rect textRect = {x, y, surface->w, surface->h};
     textRect.w *=1.6;
     textRect.h *=1.6;
-    SDL_RenderCopy(renderer, texture, NULL, &textRect);
+    SDL_RenderCopy(renderer3, texture, NULL, &textRect);
 
     SDL_FreeSurface(surface);
     SDL_DestroyTexture(texture);
 }
 //Função para inicializar o SDL
 bool init_SDL() {
-    //Tratamento de erro para a caso a janela não inicialize
-    if (SDL_Init(SDL_INIT_EVERYTHING) < 0 || IMG_Init(IMG_INIT_PNG) == 0) { //Em ordem, permitem a criação de janelas, renderização gráfica e po uso de imagens (IMG_INIT_PNG verifica se é possível usar PNG)
-        printf("SDL could not initialize! SDL_Error: %s\n", SDL_GetError());
-        return false;
-    }   
-    window = SDL_CreateWindow("Pokemon battle", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN); //Cria uma janela chamada "Pokemon Battle" e, em ordem, os parametros garantem: posição ao centro da tela, medidas da janela e que a janela será visível
-    if (!window) return false;
-    renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED); //Cria um renderizador para permitir a criação de imagens dentro da janela
+    window3 = SDL_CreateWindow("Pokemon battle", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN); //Cria uma janela chamada "Pokemon Battle" e, em ordem, os parametros garantem: posição ao centro da tela, medidas da janela e que a janela será visível
+    if (!window3) return false;
+    renderer3 = SDL_CreateRenderer(window3, -1, SDL_RENDERER_ACCELERATED); //Cria um renderizador para permitir a criação de imagens dentro da janela
 
-    //inicializando o TTF
-    if (TTF_Init() == -1) {
-        printf("SDL_ttf could not initialize! TTF_Error: %s\n", TTF_GetError());
-        return false;
-    }
     
     //carregando fonte
     font = TTF_OpenFont("assets/fonte.ttf", 12);
@@ -206,7 +165,7 @@ bool init_SDL() {
     player.sprite = load_texture("assets/pikachu.png");
     enemy.sprite = load_texture("assets/blastoise_enemy.png");
     
-    return renderer != NULL && background != NULL && player.sprite != NULL && enemy.sprite != NULL;
+    return renderer3 != NULL && background != NULL && player.sprite != NULL && enemy.sprite != NULL;
 }
 
 void createParticles(int x, int y, AttackType type) {
@@ -267,13 +226,13 @@ void updateParticles() {
     }
 }
 
-void renderParticles(SDL_Renderer *renderer) {
-    SDL_SetRenderDrawColor(renderer, 255, 50, 50, 255); 
+void renderParticles() {
+    SDL_SetRenderDrawColor(renderer3, 255, 50, 50, 255); 
     for (int i = 0; i < MAX_PARTICLES; i++) {
         if (particles[i].lifetime > 0) {
-            SDL_SetRenderDrawColor(renderer, particles[i].r, particles[i].g, particles[i].b, 255);
+            SDL_SetRenderDrawColor(renderer3, particles[i].r, particles[i].g, particles[i].b, 255);
             SDL_Rect rect = {particles[i].x, particles[i].y, 4, 4};
-            SDL_RenderFillRect(renderer, &rect);
+            SDL_RenderFillRect(renderer3, &rect);
         }
     }
 }
@@ -282,7 +241,7 @@ void renderParticles(SDL_Renderer *renderer) {
 int charCount = 0;
 const char* textoDialoogo = "teste";
 void render() {
-    SDL_RenderClear(renderer);
+    SDL_RenderClear(renderer3);
 
     //criando efeito de balançar ao levar dano
     if (shakeDuration>0) {
@@ -294,7 +253,7 @@ void render() {
 
     SDL_Rect srcRect = {2,21,242,114};
     SDL_Rect destRectBackgroung = {0, -80, 640, 480};
-    SDL_RenderCopy(renderer, background, &srcRect, &destRectBackgroung);
+    SDL_RenderCopy(renderer3, background, &srcRect, &destRectBackgroung);
     SDL_Rect srcRectbarra = {297, 56, 240, 46};
     SDL_Rect srcRectvida = {3,3,93,27};
     SDL_Rect destRectbarra = {0, 358, 640, 122};
@@ -305,14 +264,14 @@ void render() {
     SDL_Rect src_rect = {0, 0, 640, 480};
     SDL_Rect player_position = {60 + shakeOffset, 220, 200, 200}; //Retangulo que representa a posição do jogador
     SDL_Rect enemy_position = {360 + shakeOffset, 10, 200, 200}; //Retangulo que representa a posição do inimigo
-    SDL_RenderCopy (renderer, player.sprite, NULL, &player_position);
-    SDL_RenderCopy (renderer, enemy.sprite, NULL, &enemy_position);
+    SDL_RenderCopy (renderer3, player.sprite, NULL, &player_position);
+    SDL_RenderCopy (renderer3, enemy.sprite, NULL, &enemy_position);
     updateHealth(&player);
     updateHealth(&enemy);
-    SDL_RenderCopy (renderer, barra, &srcRectbarra, &destRectbarra);
-    SDL_RenderCopy (renderer, barra, &srcRectvida, &destRectvida);
-    SDL_RenderCopy (renderer, barra, &srcRectvida, &destRectvida2);
-    SDL_RenderCopy (renderer, barra1, &srcRectbarra, &destRectbarra2);
+    SDL_RenderCopy (renderer3, barra, &srcRectbarra, &destRectbarra);
+    SDL_RenderCopy (renderer3, barra, &srcRectvida, &destRectvida);
+    SDL_RenderCopy (renderer3, barra, &srcRectvida, &destRectvida2);
+    SDL_RenderCopy (renderer3, barra1, &srcRectbarra, &destRectbarra2);
 
     if (pastMovePlayer.power != 0 && !battleIsOver) {
         char playerMoveText[100];
@@ -334,26 +293,30 @@ void render() {
         render_text(playerDamageText, 20, 60);
     }
     
-    renderHealthBar(renderer, 130, 172, enemy.hp, enemy.displayed_hp, 270);
-    renderHealthBar(renderer,469,328,player.hp, player.displayed_hp, 250);
+    renderHealthBar(130, 172, enemy.hp, enemy.displayed_hp, 270);
+    renderHealthBar(469,328,player.hp, player.displayed_hp, 250);
     if(battleIsOver){
         if(player.hp == 0){
             render_text("Blastoise ganhou", 20, 400);
+            SDL_Delay(2000);
+            
         }
         else{
             render_text("Pikachu ganhou", 20, 400);
+            SDL_Delay(2000);
+            
         }
+        running = false;
     }
     updateParticles();
-    renderParticles(renderer);
+    renderParticles(renderer3);
 
-    SDL_RenderPresent(renderer);
+    SDL_RenderPresent(renderer3);
 }
 
 //loop do jogo
 void game_loop() {
     SDL_Event e;
-    bool running = true;
     while (running) {
         while (SDL_PollEvent(&e)) {
             if (e.type == SDL_QUIT) {
@@ -417,19 +380,20 @@ void game_loop() {
 //Função para fechar a janela do jogo
 void close_SDL() {
     TTF_CloseFont(font);
-    TTF_Quit();
 
     SDL_DestroyTexture(background);
     SDL_DestroyTexture(player.sprite);
     SDL_DestroyTexture(enemy.sprite);
-    SDL_DestroyRenderer(renderer);
-    SDL_DestroyWindow(window);
-    SDL_Quit();
+    SDL_DestroyRenderer(renderer3);
+    SDL_DestroyWindow(window3);
 }
 
-int main(int argc, char *argv[]) {
-    if (!init_SDL()) return -1;
-    game_loop();
+int skibidi(bool combate) { 
+        if(combate){
+        if (!init_SDL()) return -1;
+        game_loop();
+    }
     close_SDL();
+
     return 0;
 }

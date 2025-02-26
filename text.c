@@ -1,6 +1,6 @@
 #include "text.h"
 
-void renderText(SDL_Renderer* renderer, TTF_Font* font, const char* text, SDL_Color color, int x, int y){
+void renderText(SDL_Renderer* renderer, TTF_Font* font, const char* text, SDL_Color color, int x, int y, float scaleFactor){
     if(!text || strlen(text) == 0) return;
     SDL_Surface* surface = TTF_RenderText_Solid(font, text, color);
     if(!surface){
@@ -13,15 +13,18 @@ void renderText(SDL_Renderer* renderer, TTF_Font* font, const char* text, SDL_Co
         SDL_FreeSurface(surface);
         return;
     }
-    SDL_Rect dst = {x,y,surface->w,surface->h};
-    dst.w *= 2;
-    dst.h *= 2;
+    SDL_Rect dst = {x, y, surface->w, surface->h};
+    
+    // Aplica a escala no texto
+    dst.w *= scaleFactor;
+    dst.h *= scaleFactor;
+    
     SDL_RenderCopy(renderer, texture, NULL, &dst);
     SDL_FreeSurface(surface);
     SDL_DestroyTexture(texture);
 }
 
-void animateText(SDL_Renderer* renderer, Uint32* lastTime, int* charCount, const char* dialogue, int x, int y){
+void animateText(SDL_Renderer* renderer, Uint32* lastTime, int* charCount, const char* dialogue, int x, int y, float scaleFactor){
     TTF_Font* font = TTF_OpenFont("fonte.ttf", 32);
     int text_length = strlen(dialogue);
     SDL_Color black = { 0, 0, 0, 255 };
@@ -30,10 +33,10 @@ void animateText(SDL_Renderer* renderer, Uint32* lastTime, int* charCount, const
         (*charCount)++;
         *lastTime = currentTime;
     }
-    if(charCount > 0){
+    if(*charCount > 0){
         char tempText[256] = {0};
         strncpy(tempText, dialogue, *charCount);
         tempText[*charCount] = '\0';
-        renderText(renderer, font, tempText, black, x , y);
+        renderText(renderer, font, tempText, black, x, y, scaleFactor);
     }
 }
