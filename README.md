@@ -23,7 +23,7 @@ Para executar o jogo, siga os passos abaixo:
    ```
 
 ## Uso e Funcionalidades
-- Tela de início com som e opção de mutar.
+- Tela de início com som e opção de mutar na tecla "m".
 - Escolha de personagem (masculino ou feminino).
 - Exploração da cidade de Rustboro e do ginásio.
 - Batalha contra o líder do ginásio.
