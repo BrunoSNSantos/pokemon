@@ -192,3 +192,14 @@ bool colisaoEsquerdaG(SDL_Rect* camera) {
     }
     return false;
 }
+
+bool colisaCimaC(SDL_Rect* camera){
+    if(camera->y == 58 && intervaloX(camera->x,204,319)||
+    (camera->y == 32 && intervaloX(camera->x,142,203)) ||
+    (camera->y == 32 && intervaloX(camera->x,316,380)) ||
+    (camera->y == 80 && intervaloX(camera->x, 249,270))){
+        return true;
+    }
+    return false;
+
+}
