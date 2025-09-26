@@ -38,7 +38,7 @@ bool telainicio(SDL_Window* window, SDL_Renderer* renderer) {
     SDL_FreeSurface(bgSurface);
 
     // Carrega e toca a música da tela de início
-    Mix_Music* musicainicio = Mix_LoadMUS("Tela_de_inicio.mp3");
+    Mix_Music* musicainicio = Mix_LoadMUS("start.mp3");
     if (musicainicio) {
         Mix_PlayMusic(musicainicio, -1);
     } else {

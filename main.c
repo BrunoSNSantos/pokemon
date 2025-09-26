@@ -48,7 +48,7 @@ void init(){
 
 void mudarCenario(SDL_Texture** city,SDL_Rect* camera,int state,SDL_Rect* destRect){
     if(state == 1){
-        *city = loadIMG(renderer, "Sootopolis_Cityyy.png");
+        *city = loadIMG(renderer, "assets/Sootopolis_City.png");
         camera->x = 413;
         camera->y = 720;
         Mix_Music* musicagym = Mix_LoadMUS("ginasio.mp3");
@@ -56,7 +56,7 @@ void mudarCenario(SDL_Texture** city,SDL_Rect* camera,int state,SDL_Rect* destRe
 
     }
     else if(state == 0){
-        *city = loadIMG(renderer, "cidade.png");
+        *city = loadIMG(renderer, "assets/cidade.png");
         if(!dentroCasa){
             camera->x = 328;
             camera->y = 9;
@@ -296,8 +296,8 @@ int main(int argc, char* argv[]){
     }
     SDL_Event event;
     bool quit = false;
-    SDL_Texture* backs = loadIMG(renderer, "cidade.png");
-    SDL_Texture* dialogo = loadIMG(renderer,"dialogo.png");
+    SDL_Texture* backs = loadIMG(renderer, "assets/cidade.png");
+    SDL_Texture* dialogo = loadIMG(renderer,"assets/dialogo.png");
     const char* textoDialogo1 = "Parabens por chegar ate aqui! Mas sera que consegue";
     const char* textoDialogo2 = "vencer meu time? Vamos descobrir!";
     const char* textoDialogo3 = "parabens por me derrotar!";
