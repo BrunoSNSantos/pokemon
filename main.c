@@ -143,7 +143,6 @@ bool moveCameraDentroCasa(SDL_Rect* srcRect, Player* jogador){
         if(jogador->movingD){
             srcRect->y += 1;
             if(srcRect->x >250 && srcRect->x < 280 && srcRect->y > 127){
-                printf("HHEHEEH");
                 return true;
             }
         }
@@ -386,8 +385,6 @@ int main(int argc, char* argv[]){
                 animateText(renderer,&lastTimeText,&charCount4,textoDialogo5,280,600,2.0);
             }
         }
-
-       // printf("%d %d\n", srcRect.x, srcRect.y);
         SDL_RenderPresent(renderer);
         SDL_Delay(16);
     }
